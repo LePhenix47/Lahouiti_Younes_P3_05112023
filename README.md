@@ -5,6 +5,18 @@
 This Back-End project is dedicated to the online platform that connects potential tenants and property owners for seasonal rentals in ChâTop. It implements user authentication, data storage, and resource access.
 
 # Table of Contents
+- [ChâTop Back-End Project](#châtop-back-end-project)
+- [Table of Contents](#table-of-contents)
+  - [Prerequisites](#prerequisites)
+  - [Configuration](#configuration)
+  - [Project Structure](#project-structure)
+  - [Dependencies](#dependencies)
+  - [Authentication and Security](#authentication-and-security)
+  - [Image Management](#image-management)
+  - [API Documentation](#api-documentation)
+  - [Installation Procedure](#installation-procedure)
+  - [Miscellaneous](#miscellaneous)
+
 
 ## Prerequisites
 
