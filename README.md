@@ -82,6 +82,37 @@ When creating a rental listing, an image is required. This image is sent to the 
 
 The API is documented using Swagger. You can access the API documentation by navigating to the Swagger URL.
 
+Although you can view the routes and endpoints here:
+
+- `api/auth`:
+
+| HTTP VERB | Endpoint  | Parameters | Request payload                                                | Response payload                                                                | Description of the reponse     |
+|-----------|-----------|------------|----------------------------------------------------------------|---------------------------------------------------------------------------------|--------------------------------|
+| POST      | /register | x          | {     email: string;     name: string;     password: string; } | {     token: string; }                                                          | Object with the JSON Web Token |
+| POST      | /login    | x          | {     email: string;     password: string; }                   | {     token: string; }                                                          | Object with the JSON Web Token |
+| GET       | /me       | x          | x                                                              | {  id: number,  name: string,  email: string,  created_at: Date,  updated_at: Date } | Info about the user            |
+
+- `api/user`:
+
+| HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                | Description of the reponse |
+|-----------|----------|-------------|-----------------|---------------------------------------------------------------------------------|----------------------------|
+| GET       | /        | id (number) |        x         | {  id: number,  name: string,  email: string,  created_at: Date,  updated_at: Date } | Info about the user        |
+
+- `api/messages`:
+
+| HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                | Description of the reponse |
+|-----------|----------|-------------|-----------------|---------------------------------------------------------------------------------|----------------------------|
+| POST       | /        | x |        { rental_id: number, user_id: number, message: string }         | {  id: number,  name: string,  email: string,  created_at: Date,  updated_at: Date } | Message about the post request for the rental        |
+
+- `api/rentals`:
+
+| HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                                                                                           | Description of the reponse                |
+|-----------|----------|-------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
+| GET       | /        | x           | x               | {  id: number,  name: string,  surface: number,  price: number,  picture: string,  description: string,  owner_id: number,  created_at: Date,  updated_at: Date }[] | Array of rentals                          |
+| GET       | /        | id (number) | x               | {   id: number,  name: string,  surface: number,  price: number,  picture: string,  description: string,  owner_id: number,  created_at: Date,  updated_at: Date }  | Rental object                             |
+| POST      | /        | x           | FormData object | { message: string }                                                                                                                                        | Info about the request to add a rental    |
+| PUT       | /        | id (number) | FormData object | { message: string }                                                                                                                                        | Info about the request to modify a rental |
+
 ## Installation Procedure
 
 1. Clone this repository from GitHub: `git clone https://github.com/LePhenix47/Lahouiti_Younes_P3_05112023 .`
