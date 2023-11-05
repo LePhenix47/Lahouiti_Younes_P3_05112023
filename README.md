@@ -26,11 +26,11 @@ Ensure that the Java environment variable is correctly configured on your system
 - Windows:
 
 1. Open the System Properties.
-2. Click on the "Advanced" tab.
-3. Click the "Environment Variables" button.
-4. Under "System variables," scroll down to find the "Path" variable and click "Edit."
-5. Add the path to your JDK's "bin" directory (e.g., "C:\Program Files\Java\jdk[VERSION]\bin") to the list of values. Make sure to separate it from other entries with a semicolon.
-6. Click "OK" to save your changes and run the following command:
+2. Click on the `Advanced` tab.
+3. Click the `Environment Variables` button.
+4. Under `System variables`, scroll down to find the `Path` variable and click `Edit.`
+5. Add the path to your JDK's binary directory (e.g., `C:\Program Files\Java\jdk[VERSION]\bin`) to the list of values. Make sure to separate it from other entries with a semicolon.
+6. Click `OK` to save your changes and run the following command:
 
 ```shell
 java -version
