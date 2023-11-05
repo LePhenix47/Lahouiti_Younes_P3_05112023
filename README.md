@@ -4,9 +4,10 @@
 
 This Back-End project is dedicated to the online platform that connects potential tenants and property owners for seasonal rentals in ChâTop. It implements user authentication, data storage, and resource access.
 
-# Table of Contents
+## Table of Contents
+
 - [ChâTop Back-End Project](#châtop-back-end-project)
-- [Table of Contents](#table-of-contents)
+  - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
   - [Configuration](#configuration)
   - [Project Structure](#project-structure)
@@ -16,7 +17,6 @@ This Back-End project is dedicated to the online platform that connects potentia
   - [API Documentation](#api-documentation)
   - [Installation Procedure](#installation-procedure)
   - [Miscellaneous](#miscellaneous)
-
 
 ## Prerequisites
 
@@ -69,7 +69,6 @@ The project follows a classic layered architecture (Controller/Service/Java Pers
 - Lombok (optional, for reducing boilerplate code)
 - Spring Boot Starter Test (for testing)
 - Spring Security Test (for testing)
-
 
 ## Authentication and Security
 
