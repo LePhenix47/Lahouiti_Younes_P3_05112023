@@ -4,23 +4,60 @@
 
 This Back-End project is dedicated to the online platform that connects potential tenants and property owners for seasonal rentals in ChâTop. It implements user authentication, data storage, and resource access.
 
-## Project Structure
+# Table of Contents
 
-The project follows a classic layered architecture (Controller/Service/JPA Repository) to ensure code modularity and maintainability.
+## Prerequisites
 
-## Dependencies
+Before you begin, ensure that the following software is installed on your system:
 
-- Java 11, 17 or higher
-- Spring Boot
-- Spring Security with JWT-based authentication
-- Spring Data JPA
-- Spring Web
-- MySQL Driver
-- Lombok (optional, for reducing boilerplate code)
+- **Java Development Kit (JDK):** You can download the latest version of the [JDK](https://adoptopenjdk.net/) for your platform
+
+- **Apache Maven:** You'll need [Maven](https://maven.apache.org/) for building and managing the project's dependencies.
+
+- **MySQL:** Install and set up MySQL as the database for the ChâTop Back-End. You can follow the installation steps [here](https://openclassrooms.com/fr/courses/6971126-implementez-vos-bases-de-donnees-relationnelles-avec-sql/7152681-installez-le-sgbd-mysql).
 
 ## Configuration
 
-The main configuration file is `application.properties`, where you can define database configuration, server port, and other properties.
+1. Java
+**Set up Java Environment Variable:**
+
+Ensure that the Java environment variable is correctly configured on your system. This variable is essential for Java applications to run. You can set it up by following the steps specific to your operating system.
+
+- Windows:
+
+1. Open the System Properties.
+2. Click on the "Advanced" tab.
+3. Click the "Environment Variables" button.
+4. Under "System variables," scroll down to find the "Path" variable and click "Edit."
+5. Add the path to your JDK's "bin" directory (e.g., "C:\Program Files\Java\jdk[VERSION]\bin") to the list of values. Make sure to separate it from other entries with a semicolon.
+6. Click "OK" to save your changes and run the following command:
+
+```shell
+java -version
+```
+
+You should see information about the installed Java version.
+
+1. MySQL Database
+
+## Project Structure
+
+The project follows a classic layered architecture (Controller/Service/Java Persistence API Repository) to ensure code modularity and maintainability.
+
+## Dependencies
+
+- Spring Boot Starter Data JPA
+- Spring Boot Starter OAuth2 Authorization Server
+- Spring Boot Starter OAuth2 Client
+- Spring Boot Starter OAuth2 Resource Server
+- Spring Boot Starter Security
+- Spring Boot Starter Web
+- Spring Session Core
+- MySQL Connector/J
+- Lombok (optional, for reducing boilerplate code)
+- Spring Boot Starter Test (for testing)
+- Spring Security Test (for testing)
+
 
 ## Authentication and Security
 
@@ -36,7 +73,7 @@ The API is documented using Swagger. You can access the API documentation by nav
 
 ## Installation Procedure
 
-1. Clone this repository from GitHub.
+1. Clone this repository from GitHub: `git clone https://github.com/LePhenix47/Lahouiti_Younes_P3_05112023 .`
 
 2. Configure the database in `application.properties`.
 
@@ -48,16 +85,6 @@ The API is documented using Swagger. You can access the API documentation by nav
 
 6. Make sure to follow the technical specifications for a successful deployment.
 
-## Deliverables
+## Miscellaneous
 
-- GitHub Repository: [Link to the Back-End Code](link_to_github)
-- Detailed Documentation:
-  - Step-by-step procedure for installing and running the project.
-  - Database installation procedure.
-  - Swagger URL for API documentation.
-
-Enjoy developing the ChâTop Back-End!
-
-Marco
-Tech Lead
-ChâTop
+- GitHub Repository: [Link to the Front-End Code](https://github.com/OpenClassrooms-Student-Center/Developpez-le-back-end-en-utilisant-Java-et-Spring)
