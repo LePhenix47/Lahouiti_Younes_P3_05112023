@@ -10,12 +10,12 @@ This Back-End project is dedicated to the online platform that connects potentia
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
   - [Configuration](#configuration)
+  - [Installation Procedure](#installation-procedure)
   - [Project Structure](#project-structure)
   - [Dependencies](#dependencies)
   - [Authentication and Security](#authentication-and-security)
   - [Image Management](#image-management)
   - [API Documentation](#api-documentation)
-  - [Installation Procedure](#installation-procedure)
   - [Miscellaneous](#miscellaneous)
 
 ## Prerequisites
@@ -51,6 +51,20 @@ java -version
 You should see information about the installed Java version.
 
 1. MySQL Database
+
+## Installation Procedure
+
+1. Clone this repository from GitHub: `git clone https://github.com/LePhenix47/Lahouiti_Younes_P3_05112023 .`
+
+2. Configure the database in `application.properties`.
+
+3. Run the application using your IDE or by running `mvn spring-boot:run` in the project directory.
+
+4. Access the Swagger URL to explore and test the API.
+
+5. You can also use Postman to test API calls.
+
+6. Make sure to follow the technical specifications for a successful deployment.
 
 ## Project Structure
 
@@ -113,19 +127,7 @@ Although you can view the routes and endpoints here:
 | POST      | /        | x           | FormData object | { message: string }                                                                                                                                        | Info about the request to add a rental    |
 | PUT       | /        | id (number) | FormData object | { message: string }                                                                                                                                        | Info about the request to modify a rental |
 
-## Installation Procedure
 
-1. Clone this repository from GitHub: `git clone https://github.com/LePhenix47/Lahouiti_Younes_P3_05112023 .`
-
-2. Configure the database in `application.properties`.
-
-3. Run the application using your IDE or by running `mvn spring-boot:run` in the project directory.
-
-4. Access the Swagger URL to explore and test the API.
-
-5. You can also use Postman to test API calls.
-
-6. Make sure to follow the technical specifications for a successful deployment.
 
 ## Miscellaneous
 
