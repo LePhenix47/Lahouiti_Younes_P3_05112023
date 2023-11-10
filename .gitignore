@@ -36,3 +36,7 @@ build/
 
 ### Miscellaneous ###
 *.zip
+
+# Draw.io
+*.bkp
+*.dtmp
