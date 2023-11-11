@@ -1,4 +1,4 @@
-package com.openclassrooms.p3.repository;
+package com.openclassrooms.p3.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

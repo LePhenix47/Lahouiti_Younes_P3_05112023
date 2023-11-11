@@ -1,4 +1,4 @@
-package com.openclassrooms.p3.repository;
+package com.openclassrooms.p3.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
