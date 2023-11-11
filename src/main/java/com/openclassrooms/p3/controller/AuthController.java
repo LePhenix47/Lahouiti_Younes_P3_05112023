@@ -22,7 +22,7 @@ public class AuthController {
      * Registers a new user.
      *
      * @param request The registration request containing user details.
-     * @return ResponseEntity with a token if registration is successful.
+     * @return A JWT if registration is successful.
      */
     @PostMapping("/register")
     public void register(@RequestBody Map<String, String> request) {
@@ -33,7 +33,7 @@ public class AuthController {
      * Logs in an existing user.
      *
      * @param request The login request containing user credentials.
-     * @return ResponseEntity with a token if login is successful.
+     * @return A JWT if login is successful.
      */
     @PostMapping("/login")
     public void login(@RequestBody Map<String, String> request) {
@@ -43,7 +43,7 @@ public class AuthController {
     /**
      * Retrieves information about the currently authenticated user.
      *
-     * @return ResponseEntity with user information.
+     * @return User info.
      */
     @GetMapping("/me")
     public void getMe() {
