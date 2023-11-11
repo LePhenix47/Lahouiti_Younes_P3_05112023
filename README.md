@@ -100,7 +100,7 @@ Although you can view the routes and endpoints here:
 
 - `api/auth`:
 
-| HTTP VERB | Endpoint  | Parameters | Request payload                                                | Response payload                                                                | Description of the reponse     |
+| HTTP VERB | Endpoint  | Parameters | Request payload                                                | Response payload                                                                | Description of the response     |
 |-----------|-----------|------------|----------------------------------------------------------------|---------------------------------------------------------------------------------|--------------------------------|
 | POST      | /register | x          | {     email: string;     name: string;     password: string; } | {     token: string; }                                                          | Object with the JSON Web Token |
 | POST      | /login    | x          | {     email: string;     password: string; }                   | {     token: string; }                                                          | Object with the JSON Web Token |
@@ -108,19 +108,19 @@ Although you can view the routes and endpoints here:
 
 - `api/user`:
 
-| HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                | Description of the reponse |
+| HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                | Description of the response |
 |-----------|----------|-------------|-----------------|---------------------------------------------------------------------------------|----------------------------|
 | GET       | /        | id (number) |        x         | {  id: number,  name: string,  email: string,  created_at: Date,  updated_at: Date } | Info about the user        |
 
 - `api/messages`:
 
-| HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                | Description of the reponse |
+| HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                | Description of the response |
 |-----------|----------|-------------|-----------------|---------------------------------------------------------------------------------|----------------------------|
 | POST       | /        | x |        { rental_id: number, user_id: number, message: string }         | {  id: number,  name: string,  email: string,  created_at: Date,  updated_at: Date } | Message about the post request for the rental        |
 
 - `api/rentals`:
 
-| HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                                                                                           | Description of the reponse                |
+| HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                                                                                           | Description of the response                |
 |-----------|----------|-------------|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------|
 | GET       | /        | x           | x               | {  id: number,  name: string,  surface: number,  price: number,  picture: string,  description: string,  owner_id: number,  created_at: Date,  updated_at: Date }[] | Array of rentals                          |
 | GET       | /        | id (number) | x               | {   id: number,  name: string,  surface: number,  price: number,  picture: string,  description: string,  owner_id: number,  created_at: Date,  updated_at: Date }  | Rental object                             |
