@@ -116,7 +116,7 @@ Although you can view the routes and endpoints here:
 
 | HTTP VERB | Endpoint | Parameters  | Request payload | Response payload                                                                | Description of the response |
 |-----------|----------|-------------|-----------------|---------------------------------------------------------------------------------|----------------------------|
-| POST       | /        | x |        { rental_id: number, user_id: number, message: string }         | {  id: number,  name: string,  email: string,  created_at: Date,  updated_at: Date } | Message about the post request for the rental        |
+| POST       | /        | x |        { rental_id: number, user_id: number, message: string }         | { message: string } | Message about the post request for the rental        |
 
 - `api/rentals`:
 
