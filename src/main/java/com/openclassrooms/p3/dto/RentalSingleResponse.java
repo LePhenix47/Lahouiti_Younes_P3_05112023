@@ -5,6 +5,9 @@ import java.sql.Date;
 
 import lombok.Value;
 
+/**
+ * Response payload for retrieving a single rental.
+ */
 @Value
 public class RentalSingleResponse {
     private Long id;

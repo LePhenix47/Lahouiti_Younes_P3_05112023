@@ -4,6 +4,9 @@ import lombok.Value;
 
 import java.sql.Date;
 
+/**
+ * Response payload for retrieving user information.
+ */
 @Value
 public class UserInfoResponse {
     private Long id;
