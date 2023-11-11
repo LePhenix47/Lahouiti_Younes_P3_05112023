@@ -127,8 +127,6 @@ Although you can view the routes and endpoints here:
 | POST      | /        | x           | FormData object | { message: string }                                                                                                                                        | Info about the request to add a rental    |
 | PUT       | /        | id (number) | FormData object | { message: string }                                                                                                                                        | Info about the request to modify a rental |
 
-
-
 ## Miscellaneous
 
 - GitHub Repository: [Link to the Front-End Code](https://github.com/OpenClassrooms-Student-Center/Developpez-le-back-end-en-utilisant-Java-et-Spring)
