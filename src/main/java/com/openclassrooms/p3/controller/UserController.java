@@ -3,6 +3,7 @@ package com.openclassrooms.p3.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.openclassrooms.p3.dto.UserInfoResponse;
 import com.openclassrooms.p3.service.UserService;
 
 /**
@@ -22,7 +23,7 @@ public class UserController {
      * @return ResponseEntity with user information.
      */
     @GetMapping("/")
-    public void getUser(@RequestParam Long id) {
+    public UserInfoResponse getUser(@RequestParam final Long id) {
         // TODO: Implement getUser logic
     }
 }

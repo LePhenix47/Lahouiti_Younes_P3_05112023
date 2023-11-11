@@ -5,6 +5,6 @@ import lombok.Value;
 import java.util.List;
 
 @Value
-public class RentalResponse {
+public class RentalAllResponse {
     private List<RentalSingleResponse> rentals;
 }

@@ -3,9 +3,11 @@ package com.openclassrooms.p3.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.openclassrooms.p3.dto.RentalAllResponse;
+import com.openclassrooms.p3.dto.RentalSingleResponse;
+import com.openclassrooms.p3.dto.RentalUpdateRequest;
+import com.openclassrooms.p3.dto.ResponseMessage;
 import com.openclassrooms.p3.service.RentalService;
-
-import java.util.Map;
 
 /**
  * Controller for handling rental-related operations.
@@ -23,7 +25,7 @@ public class RentalController {
      * @return ResponseEntity with an array of rentals.
      */
     @GetMapping("/")
-    public void getRentals() {
+    public RentalAllResponse getRentals() {
         // TODO: Implement getRentals logic
     }
 
@@ -34,7 +36,7 @@ public class RentalController {
      * @return ResponseEntity with rental information.
      */
     @GetMapping("/{id}")
-    public void getRental(@PathVariable Long id) {
+    public RentalSingleResponse getRental(@PathVariable final Long id) {
         // TODO: Implement getRental logic
     }
 
@@ -45,7 +47,7 @@ public class RentalController {
      * @return ResponseEntity with information about the rental addition.
      */
     @PostMapping("/")
-    public void addRental(@RequestParam Map<String, Object> request) {
+    public ResponseMessage addRental(@RequestParam RentalUpdateRequest request) {
         // TODO: Implement addRental logic
     }
 
@@ -57,7 +59,8 @@ public class RentalController {
      * @return ResponseEntity with information about the rental update.
      */
     @PutMapping("/{id}")
-    public void updateRental(@PathVariable Long id, @RequestParam Map<String, Object> request) {
+    public ResponseMessage updateRental(@PathVariable final Long id,
+            @RequestParam RentalUpdateRequest request) {
         // TODO: Implement updateRental logic
     }
 }

@@ -2,9 +2,11 @@ package com.openclassrooms.p3.controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.openclassrooms.p3.dto.AuthLoginRequest;
+import com.openclassrooms.p3.dto.AuthRegisterRequest;
+import com.openclassrooms.p3.dto.AuthResponse;
+import com.openclassrooms.p3.dto.UserInfoResponse;
 import com.openclassrooms.p3.service.UserService;
-
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,7 +27,7 @@ public class AuthController {
      * @return A JWT if registration is successful.
      */
     @PostMapping("/register")
-    public void register(@RequestBody Map<String, String> request) {
+    public AuthResponse register(@RequestBody AuthRegisterRequest request) {
         // TODO: Implement registration logic
     }
 
@@ -36,7 +38,7 @@ public class AuthController {
      * @return A JWT if login is successful.
      */
     @PostMapping("/login")
-    public void login(@RequestBody Map<String, String> request) {
+    public AuthResponse login(@RequestBody AuthLoginRequest request) {
         // TODO: Implement login logic
     }
 
@@ -46,7 +48,7 @@ public class AuthController {
      * @return User info.
      */
     @GetMapping("/me")
-    public void getMe() {
+    public UserInfoResponse getMe() {
         // TODO: Implement getMe logic
     }
 }

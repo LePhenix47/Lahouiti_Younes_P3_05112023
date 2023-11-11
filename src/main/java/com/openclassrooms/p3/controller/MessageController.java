@@ -1,10 +1,10 @@
 package com.openclassrooms.p3.controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.openclassrooms.p3.dto.MessageRequest;
+import com.openclassrooms.p3.dto.ResponseMessage;
 import com.openclassrooms.p3.service.MessageService;
 
 /**
@@ -23,7 +23,7 @@ public class MessageController {
      * @return ResponseEntity with information about the message post.
      */
     @PostMapping("/")
-    public void postMessage(@RequestBody Map<String, Object> request) {
+    public ResponseMessage postMessage(@RequestBody MessageRequest request) {
         // TODO: Implement postMessage logic
     }
 }
