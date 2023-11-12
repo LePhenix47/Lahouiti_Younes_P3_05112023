@@ -21,7 +21,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests(auth -> {
+        return http.authorizeHttpRequests((auth) -> {
             for (String route : AUTH_NEEDED_ROUTES) {
                 auth.requestMatchers(route).authenticated();
             }

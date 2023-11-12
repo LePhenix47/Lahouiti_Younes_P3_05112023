@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @Table(name = "users")
-public class User {
+public class _User {
     /**
      * Primary key and unique identifier for the user.
      */

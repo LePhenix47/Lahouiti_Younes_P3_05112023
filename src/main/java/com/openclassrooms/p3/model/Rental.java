@@ -21,11 +21,11 @@ public class Rental {
     private Long id;
 
     /**
-     * User who owns the rental. This field won't be added to the database.
+     * _User who owns the rental. This field won't be added to the database.
      */
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false, insertable = false, updatable = false)
-    private User owner;
+    private _User owner;
 
     /**
      * Foreign key referencing the ID of the owner in the `users` table.

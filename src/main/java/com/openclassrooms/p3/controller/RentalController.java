@@ -22,10 +22,10 @@ public class RentalController {
     /**
      * Retrieves all rentals.
      *
-     * @return ResponseEntity with an array of rentals.
+     * @return RentalAllResponse with an array of rentals.
      */
     @GetMapping("/")
-    public RentalAllResponse getRentals() {
+    public void getRentals() {
         // TODO: Implement getRentals logic
     }
 
@@ -33,10 +33,10 @@ public class RentalController {
      * Retrieves information about a specific rental.
      *
      * @param id The ID of the rental to retrieve.
-     * @return ResponseEntity with rental information.
+     * @return RentalSingleResponse with rental information.
      */
     @GetMapping("/{id}")
-    public RentalSingleResponse getRental(@PathVariable final Long id) {
+    public void getRental(@PathVariable final Long id) {
         // TODO: Implement getRental logic
     }
 
@@ -44,10 +44,10 @@ public class RentalController {
      * Adds a new rental.
      *
      * @param request The rental request containing details.
-     * @return ResponseEntity with information about the rental addition.
+     * @return ResponseMessage with information about the rental addition.
      */
     @PostMapping("/")
-    public ResponseMessage addRental(@RequestParam RentalUpdateRequest request) {
+    public void addRental(@RequestParam RentalUpdateRequest request) {
         // TODO: Implement addRental logic
     }
 
@@ -56,10 +56,10 @@ public class RentalController {
      *
      * @param id      The ID of the rental to update.
      * @param request The rental request containing details for the update.
-     * @return ResponseEntity with information about the rental update.
+     * @return ResponseMessage with information about the rental update.
      */
     @PutMapping("/{id}")
-    public ResponseMessage updateRental(@PathVariable final Long id,
+    public void updateRental(@PathVariable final Long id,
             @RequestParam RentalUpdateRequest request) {
         // TODO: Implement updateRental logic
     }

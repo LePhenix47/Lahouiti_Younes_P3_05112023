@@ -20,11 +20,11 @@ public class Message {
     private Long id;
 
     /**
-     * User who sent the message. This field won't be added to the database.
+     * _User who sent the message. This field won't be added to the database.
      */
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
-    private User user;
+    private _User user;
 
     /**
      * Foreign key referencing the ID of the user in the `users` table.

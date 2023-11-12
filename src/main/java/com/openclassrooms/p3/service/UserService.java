@@ -1,6 +1,6 @@
 package com.openclassrooms.p3.service;
 
-import com.openclassrooms.p3.model.User;
+import com.openclassrooms.p3.model._User;
 import com.openclassrooms.p3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class UserService {
      * @param id The identifier of the user.
      * @return An Optional containing the user if found, or empty if not.
      */
-    public Optional<User> getUser(final Long id) {
+    public Optional<_User> getUser(final Long id) {
         return userRepository.findById(id);
     }
 
@@ -34,7 +34,7 @@ public class UserService {
      *
      * @return Iterable collection of all users.
      */
-    public Iterable<User> getUsers() {
+    public Iterable<_User> getUsers() {
         return userRepository.findAll();
     }
 
@@ -53,7 +53,7 @@ public class UserService {
      * @param user The user to be saved or updated.
      * @return The saved or updated user.
      */
-    public User saveUser(User user) {
+    public _User saveUser(_User user) {
         return userRepository.save(user);
     }
 }

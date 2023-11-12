@@ -20,10 +20,10 @@ public class MessageController {
      * Posts a message.
      *
      * @param request The message request containing details.
-     * @return ResponseEntity with information about the message post.
+     * @return ResponseMessage with information about the message post.
      */
     @PostMapping("/")
-    public ResponseMessage postMessage(@RequestBody MessageRequest request) {
+    public void postMessage(@RequestBody MessageRequest request) {
         // TODO: Implement postMessage logic
     }
 }

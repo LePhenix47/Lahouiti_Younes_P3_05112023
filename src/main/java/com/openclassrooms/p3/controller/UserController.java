@@ -20,10 +20,10 @@ public class UserController {
      * Retrieves information about a specific user.
      *
      * @param id The ID of the user to retrieve.
-     * @return ResponseEntity with user information.
+     * @return UserInfoResponse with user information.
      */
     @GetMapping("/")
-    public UserInfoResponse getUser(@RequestParam final Long id) {
+    public void getUser(@RequestParam final Long id) {
         // TODO: Implement getUser logic
     }
 }
