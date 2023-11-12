@@ -6,9 +6,14 @@ import com.openclassrooms.p3.dto.AuthLoginRequest;
 import com.openclassrooms.p3.dto.AuthRegisterRequest;
 import com.openclassrooms.p3.dto.AuthResponse;
 import com.openclassrooms.p3.dto.UserInfoResponse;
+import com.openclassrooms.p3.exception.ApiException;
+import com.openclassrooms.p3.model.User;
 import com.openclassrooms.p3.service.UserService;
 
+import java.time.ZonedDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
 /**
  * Controller for handling authentication-related operations.
@@ -29,6 +34,18 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse register(@RequestBody AuthRegisterRequest request) {
         // TODO: Implement registration logic
+        try {
+            // ? Simplified logic for user registration
+            // User newUser = new User(request.email(), request.name(), request.password());
+            // userService.saveUser(newUser);
+
+            // ? For simplicity, let's assume a successful registration generates a token
+            // String token = generateJwtToken(request.email());
+            // return new AuthResponse(token);
+        } catch (Exception e) {
+            throw new ApiException("Error during user registration", e, HttpStatus.INTERNAL_SERVER_ERROR,
+                    ZonedDateTime.now());
+        }
     }
 
     /**
