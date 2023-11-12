@@ -1,17 +1,9 @@
 package com.openclassrooms.p3.dto;
 
-import lombok.Value;
-
 import java.sql.Date;
 
 /**
  * Response payload for retrieving user information.
  */
-@Value
-public class UserInfoResponse {
-    private Long id;
-    private String name;
-    private String email;
-    private Date created_at;
-    private Date updated_at;
+public record UserInfoResponse(Long id, String name, String email, Date created_at, Date updated_at) {
 }
