@@ -3,7 +3,7 @@ package com.openclassrooms.p3.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.openclassrooms.p3.dto.UserInfoResponse;
+import com.openclassrooms.p3.payload.response.UserInfoResponse;
 import com.openclassrooms.p3.service.UserService;
 
 /**

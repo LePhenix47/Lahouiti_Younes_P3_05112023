@@ -3,10 +3,10 @@ package com.openclassrooms.p3.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.openclassrooms.p3.dto.RentalAllResponse;
-import com.openclassrooms.p3.dto.RentalSingleResponse;
-import com.openclassrooms.p3.dto.RentalUpdateRequest;
-import com.openclassrooms.p3.dto.ResponseMessage;
+import com.openclassrooms.p3.payload.request.RentalUpdateRequest;
+import com.openclassrooms.p3.payload.response.RentalAllResponse;
+import com.openclassrooms.p3.payload.response.RentalSingleResponse;
+import com.openclassrooms.p3.payload.response.ResponseMessage;
 import com.openclassrooms.p3.service.RentalService;
 
 /**

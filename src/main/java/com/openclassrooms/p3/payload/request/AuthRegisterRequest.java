@@ -1,4 +1,4 @@
-package com.openclassrooms.p3.dto;
+package com.openclassrooms.p3.payload.request;
 
 /**
  * Request payload for user registration.

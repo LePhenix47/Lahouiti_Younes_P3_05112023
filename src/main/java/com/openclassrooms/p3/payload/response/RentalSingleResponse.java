@@ -1,4 +1,4 @@
-package com.openclassrooms.p3.dto;
+package com.openclassrooms.p3.payload.response;
 
 import java.math.BigDecimal;
 import java.sql.Date;

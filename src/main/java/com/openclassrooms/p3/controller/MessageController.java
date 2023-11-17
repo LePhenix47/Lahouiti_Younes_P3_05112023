@@ -3,8 +3,8 @@ package com.openclassrooms.p3.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.openclassrooms.p3.dto.MessageRequest;
-import com.openclassrooms.p3.dto.ResponseMessage;
+import com.openclassrooms.p3.payload.request.MessageRequest;
+import com.openclassrooms.p3.payload.response.ResponseMessage;
 import com.openclassrooms.p3.service.MessageService;
 
 /**
