@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Appender to write to the console -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- Customize the log format -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex{short}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root logger -->
+    <root level="error">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- Logger for your application package -->
+    <logger name="com.openclassrooms" level="debug">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+</configuration>

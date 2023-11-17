@@ -2,9 +2,12 @@ package com.openclassrooms.p3.controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.openclassrooms.p3.model._User;
 import com.openclassrooms.p3.payload.request.AuthLoginRequest;
 import com.openclassrooms.p3.payload.request.AuthRegisterRequest;
 import com.openclassrooms.p3.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private UserService userService;
@@ -21,18 +25,21 @@ public class AuthController {
      * Registers a new user.
      *
      * @param request The registration request containing user details.
-     * @return AuthResponse A JWT if registration is successful.
+     * @return ResponseEntity<AuthResponse> A JWT if registration is successful.
      */
     @PostMapping("/register")
-    public String register(@RequestBody AuthRegisterRequest request) {
-        return "Register";
+    public _User register(@RequestBody AuthRegisterRequest request) {
+        _User savedUser = userService.saveUserFromRegistrationRequest(request);
+        logger.info(savedUser.toString());
+
+        return savedUser;
     }
 
     /**
      * Logs in an existing user.
      *
      * @param request The login request containing user credentials.
-     * @return AuthResponse A JWT if login is successful.
+     * @return ResponseEntity<AuthResponse> A JWT if login is successful.
      */
     @PostMapping("/login")
     public void login(@RequestBody AuthLoginRequest request) {
@@ -42,7 +49,7 @@ public class AuthController {
     /**
      * Retrieves information about the currently authenticated user.
      *
-     * @return AuthResponse containing the user info.
+     * @return ResponseEntity<AuthResponse> containing the user info.
      */
     @GetMapping("/me")
     public void getMe() {

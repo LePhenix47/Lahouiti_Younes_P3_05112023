@@ -8,26 +8,32 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig {
 
-    private static final String[] AUTH_NEEDED_ROUTES = {
+    private static final String[] AUTHENTICATION_NEEDED_ROUTES = {
             "/api/messages/**",
             "/api/rentals/**",
             "/api/users/**",
-            "/api/auth/me"
+            "/api/auth/**"
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.anyRequest())
-                .httpBasic(Customizer.withDefaults())
-                .build();
+
+        http.csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests((authorize) -> authorize.requestMatchers(
+                         "/api/messages/**",
+            "/api/rentals/**",
+            "/api/users/**",
+            "/api/auth/**").permitAll().anyRequest().authenticated());
+
+        return http.build();
     }
 
     @Bean

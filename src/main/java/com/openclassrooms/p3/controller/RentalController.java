@@ -22,7 +22,7 @@ public class RentalController {
     /**
      * Retrieves all rentals.
      *
-     * @return RentalAllResponse with an array of rentals.
+     * @return ResponseEntity<RentalAllResponse> with an array of rentals.
      */
     @GetMapping("/")
     public void getRentals() {
@@ -33,7 +33,7 @@ public class RentalController {
      * Retrieves information about a specific rental.
      *
      * @param id The ID of the rental to retrieve.
-     * @return RentalSingleResponse with rental information.
+     * @return ResponseEntity<RentalSingleResponse> with rental information.
      */
     @GetMapping("/{id}")
     public void getRental(@PathVariable final Long id) {
@@ -44,7 +44,8 @@ public class RentalController {
      * Adds a new rental.
      *
      * @param request The rental request containing details.
-     * @return ResponseMessage with information about the rental addition.
+     * @return ResponseEntity<ResponseMessage> with information about the rental
+     *         addition.
      */
     @PostMapping("/")
     public void addRental(@RequestParam RentalUpdateRequest request) {
@@ -56,7 +57,8 @@ public class RentalController {
      *
      * @param id      The ID of the rental to update.
      * @param request The rental request containing details for the update.
-     * @return ResponseMessage with information about the rental update.
+     * @return ResponseEntity<ResponseMessage> with information about the rental
+     *         update.
      */
     @PutMapping("/{id}")
     public void updateRental(@PathVariable final Long id,

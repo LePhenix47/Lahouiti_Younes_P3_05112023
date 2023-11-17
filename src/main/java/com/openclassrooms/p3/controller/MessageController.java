@@ -20,7 +20,8 @@ public class MessageController {
      * Posts a message.
      *
      * @param request The message request containing details.
-     * @return ResponseMessage with information about the message post.
+     * @return ResponseEntity<ResponseMessage> with information about
+     *         the message post.
      */
     @PostMapping("/")
     public void postMessage(@RequestBody MessageRequest request) {

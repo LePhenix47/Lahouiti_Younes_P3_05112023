@@ -20,7 +20,7 @@ public class UserController {
      * Retrieves information about a specific user.
      *
      * @param id The ID of the user to retrieve.
-     * @return UserInfoResponse with user information.
+     * @return ResponseEntity<UserInfoResponse> with user information.
      */
     @GetMapping("/")
     public void getUser(@RequestParam final Long id) {

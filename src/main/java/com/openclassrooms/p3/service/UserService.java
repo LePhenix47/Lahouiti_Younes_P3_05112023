@@ -1,10 +1,13 @@
 package com.openclassrooms.p3.service;
 
+import com.openclassrooms.p3.configuration.SpringSecurityConfig;
 import com.openclassrooms.p3.model._User;
+import com.openclassrooms.p3.payload.request.AuthRegisterRequest;
 import com.openclassrooms.p3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import lombok.Data;
@@ -18,6 +21,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SpringSecurityConfig securityConfig;
 
     /**
      * Retrieve a user by their unique identifier.
@@ -54,6 +60,23 @@ public class UserService {
      * @return The saved or updated user.
      */
     public _User saveUser(_User user) {
+        return userRepository.save(user);
+    }
+
+    /**
+     * Save or update a user using information from the registration request.
+     *
+     * @param registrationRequest The registration request containing user details.
+     * @return The saved or updated user.
+     */
+    public _User saveUserFromRegistrationRequest(AuthRegisterRequest registrationRequest) {
+        _User user = new _User();
+
+        user.setName(registrationRequest.name());
+        user.setEmail(registrationRequest.email());
+        user.setPassword(securityConfig.encode(request.password()));
+        user.setCreatedAt(LocalDateTime.now()); // Set the createdAt property to the current timestamp
+
         return userRepository.save(user);
     }
 }

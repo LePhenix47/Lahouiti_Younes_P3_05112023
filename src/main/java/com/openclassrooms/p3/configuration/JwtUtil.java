@@ -1,4 +1,4 @@
-package com.openclassrooms.p3.utils;
+package com.openclassrooms.p3.configuration;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
