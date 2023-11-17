@@ -50,7 +50,60 @@ java -version
 
 You should see information about the installed Java version.
 
-1. MySQL Database
+2. MySQL Database
+
+Follow these steps to configure MySQL Workbench for your Java application:
+
+Open MySQL Workbench.
+
+Connect to your MySQL Server instance.
+
+Create a new database for your application and add all the tables to your database:
+
+```sql
+-- Create the tables
+DROP DATABASE IF EXISTS `p3-chatop`;
+
+-- Create the database
+CREATE DATABASE `p3-chatop`;
+
+-- Switch to the new database
+USE `p3-chatop`;
+
+-- Create the tables
+CREATE TABLE `users` (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) UNIQUE NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `rentals` (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `owner_id` BIGINT NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `surface` INT DEFAULT NULL,
+    `price` DECIMAL(10, 2) DEFAULT NULL,
+    `picture` VARCHAR(255) DEFAULT NULL,
+    `description` TEXT,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`)
+);
+
+CREATE TABLE `messages` (
+    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` BIGINT NOT NULL,
+    `rental_id` BIGINT NOT NULL,
+    `message` TEXT,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+    FOREIGN KEY (`rental_id`) REFERENCES `rentals` (`id`)
+);
+```
 
 ## Installation Procedure
 
@@ -72,17 +125,33 @@ The project follows a classic layered architecture (Controller/Service/Java Pers
 
 ## Dependencies
 
-- Spring Boot Starter Data JPA
-- Spring Boot Starter OAuth2 Authorization Server
-- Spring Boot Starter OAuth2 Client
-- Spring Boot Starter OAuth2 Resource Server
-- Spring Boot Starter Security
-- Spring Boot Starter Web
-- Spring Session Core
-- MySQL Connector/J
-- Lombok (optional, for reducing boilerplate code)
-- Spring Boot Starter Test (for testing)
-- Spring Security Test (for testing)
+1. Spring Boot Starters:
+- spring-boot-starter-data-jpa
+- spring-boot-starter-security
+- spring-boot-starter-web
+
+2. Spring Session:
+
+- spring-session-core
+
+3. Database Connector:
+
+- mysql-connector-j (runtime scope)
+
+4. Project Lombok:
+
+- lombok (optional)
+
+5. Testing Dependencies:
+
+- spring-boot-starter-test (test scope)
+- spring-security-test (test scope)
+
+6. JSON Web Token (JWT) Dependencies:
+
+- jjwt-api (version: 0.11.2)
+- jjwt-impl (version: 0.11.2, runtime scope)
+- jjwt-jackson (version: 0.11.2, runtime scope)
 
 ## Authentication and Security
 
