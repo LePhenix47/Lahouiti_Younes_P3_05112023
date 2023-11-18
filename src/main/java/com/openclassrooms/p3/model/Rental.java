@@ -25,7 +25,7 @@ public class Rental {
      */
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false, insertable = false, updatable = false)
-    private _User owner;
+    private Users owner;
 
     /**
      * Foreign key referencing the ID of the owner in the `users` table.

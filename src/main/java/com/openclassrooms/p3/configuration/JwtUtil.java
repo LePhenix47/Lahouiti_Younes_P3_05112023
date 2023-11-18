@@ -22,6 +22,6 @@ public class JwtUtil {
                 .signWith(SECRET_KEY)
                 .compact();
 
-        return "Bearer " + token;
+        return token;
     }
 }

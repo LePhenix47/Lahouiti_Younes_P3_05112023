@@ -10,6 +10,7 @@ import com.openclassrooms.p3.service.MessageService;
 /**
  * Controller for handling message-related operations.
  */
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/messages")
 public class MessageController {

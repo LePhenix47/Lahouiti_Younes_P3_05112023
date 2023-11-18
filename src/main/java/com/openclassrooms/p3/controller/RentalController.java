@@ -12,6 +12,7 @@ import com.openclassrooms.p3.service.RentalService;
 /**
  * Controller for handling rental-related operations.
  */
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/rentals")
 public class RentalController {

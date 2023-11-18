@@ -24,7 +24,7 @@ public class Message {
      */
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
-    private _User user;
+    private Users user;
 
     /**
      * Foreign key referencing the ID of the user in the `users` table.

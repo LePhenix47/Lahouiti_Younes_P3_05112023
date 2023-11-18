@@ -129,6 +129,7 @@ The project follows a classic layered architecture (Controller/Service/Java Pers
 - spring-boot-starter-data-jpa
 - spring-boot-starter-security
 - spring-boot-starter-web
+- spring-boot-starter-validation
 
 2. Spring Session:
 

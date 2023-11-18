@@ -20,6 +20,7 @@ public class SpringSecurityConfig {
             "/api/users/**",
             "/api/auth/**"
     };
+    public static final String passwordEncoder = null;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -28,10 +29,7 @@ public class SpringSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authorize) -> authorize.requestMatchers(
-                         "/api/messages/**",
-            "/api/rentals/**",
-            "/api/users/**",
-            "/api/auth/**").permitAll().anyRequest().authenticated());
+                        AUTHENTICATION_NEEDED_ROUTES).permitAll().anyRequest().authenticated());
 
         return http.build();
     }

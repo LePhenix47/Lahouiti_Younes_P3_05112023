@@ -1,10 +1,10 @@
 package com.openclassrooms.p3.service;
 
-import com.openclassrooms.p3.configuration.SpringSecurityConfig;
-import com.openclassrooms.p3.model._User;
+import com.openclassrooms.p3.model.Users;
 import com.openclassrooms.p3.payload.request.AuthRegisterRequest;
 import com.openclassrooms.p3.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,7 +23,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private SpringSecurityConfig securityConfig;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     /**
      * Retrieve a user by their unique identifier.
@@ -31,7 +31,7 @@ public class UserService {
      * @param id The identifier of the user.
      * @return An Optional containing the user if found, or empty if not.
      */
-    public Optional<_User> getUser(final Long id) {
+    public Optional<Users> getUser(final Long id) {
         return userRepository.findById(id);
     }
 
@@ -40,7 +40,7 @@ public class UserService {
      *
      * @return Iterable collection of all users.
      */
-    public Iterable<_User> getUsers() {
+    public Iterable<Users> getUsers() {
         return userRepository.findAll();
     }
 
@@ -59,7 +59,7 @@ public class UserService {
      * @param user The user to be saved or updated.
      * @return The saved or updated user.
      */
-    public _User saveUser(_User user) {
+    public Users saveUser(Users user) {
         return userRepository.save(user);
     }
 
@@ -69,14 +69,36 @@ public class UserService {
      * @param registrationRequest The registration request containing user details.
      * @return The saved or updated user.
      */
-    public _User saveUserFromRegistrationRequest(AuthRegisterRequest registrationRequest) {
-        _User user = new _User();
+    public Users saveUserFromRegistrationRequest(AuthRegisterRequest registrationRequest) {
+        Users user = new Users();
 
         user.setName(registrationRequest.name());
         user.setEmail(registrationRequest.email());
-        user.setPassword(securityConfig.encode(request.password()));
-        user.setCreatedAt(LocalDateTime.now()); // Set the createdAt property to the current timestamp
+        user.setPassword(passwordEncoder.encode(registrationRequest.password()));
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
 
         return userRepository.save(user);
+    }
+
+    /**
+     * Verify if the provided email is already in use.
+     *
+     * @param email The email to be verified.
+     * @return True if the email is already in use, false otherwise.
+     */
+    public boolean isEmailInUse(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    /**
+     * Verify if the provided password matches the stored hashed password.
+     *
+     * @param user     The user for which to verify the password.
+     * @param password The password to be verified.
+     * @return True if the password matches, false otherwise.
+     */
+    public boolean isPasswordValid(Users user, String password) {
+        return passwordEncoder.matches(password, user.getPassword());
     }
 }

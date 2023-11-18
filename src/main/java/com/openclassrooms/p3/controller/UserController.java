@@ -9,6 +9,7 @@ import com.openclassrooms.p3.service.UserService;
 /**
  * Controller for handling user-related operations.
  */
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
