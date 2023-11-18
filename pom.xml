@@ -66,12 +66,12 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>1.4.2.Final</version> <!-- Check for the latest version -->
+			<version>1.5.5.Final</version> <!-- Check for the latest version -->
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct-processor</artifactId>
-			<version>1.4.2.Final</version> <!-- Make sure the version matches the mapstruct version -->
+			<version>1.5.5.Final</version> <!-- Make sure the version matches the mapstruct version -->
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

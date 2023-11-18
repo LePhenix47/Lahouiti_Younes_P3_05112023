@@ -72,11 +72,13 @@ public class UserService {
     public Users saveUserFromRegistrationRequest(AuthRegisterRequest registrationRequest) {
         Users user = new Users();
 
+        LocalDateTime currentTime = LocalDateTime.now();
+
         user.setName(registrationRequest.name());
         user.setEmail(registrationRequest.email());
         user.setPassword(passwordEncoder.encode(registrationRequest.password()));
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
+        user.setCreatedAt(currentTime);
+        user.setUpdatedAt(currentTime);
 
         return userRepository.save(user);
     }
@@ -88,7 +90,7 @@ public class UserService {
      * @return True if the email is already in use, false otherwise.
      */
     public boolean isEmailInUse(String email) {
-        return userRepository.existsByEmail(email);
+        return true;
     }
 
     /**

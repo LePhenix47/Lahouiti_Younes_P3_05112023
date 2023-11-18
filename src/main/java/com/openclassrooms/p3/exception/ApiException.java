@@ -1,36 +1,111 @@
 package com.openclassrooms.p3.exception;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 
+/**
+ * Custom exception class for handling API-related errors.
+ *
+ * This exception includes details such as the error message, a list of
+ * validation errors,
+ * the underlying throwable (if any), the HTTP status code, and the timestamp of
+ * the occurrence.
+ */
 public class ApiException extends RuntimeException {
+        /**
+         * The main error message describing the exception.
+         */
         private final String message;
+
+        /**
+         * A list of validation errors in case of payload validation failures.
+         */
+        private final List<String> errors;
+
+        /**
+         * The underlying throwable that caused this exception (if applicable).
+         */
         private final Throwable throwable;
+
+        /**
+         * The HTTP status code associated with this exception.
+         */
         private final HttpStatus httpStatus;
-        private final ZonedDateTime zonedDateTime;
 
-        public ApiException(String message, Throwable throwable, HttpStatus httpStatus, ZonedDateTime zonedDateTime) {
+        /**
+         * The timestamp when this exception occurred.
+         */
+        private final LocalDateTime date;
+
+        public ApiException(String message, List<String> errors, Throwable throwable, HttpStatus httpStatus,
+                        LocalDateTime date) {
                 super(message);
-
                 this.message = message;
+                this.errors = errors;
                 this.throwable = throwable;
                 this.httpStatus = httpStatus;
-                this.zonedDateTime = zonedDateTime;
+                this.date = date;
         }
 
+        /**
+         * Gets the main error message.
+         *
+         * @return The error message.
+         */
         public String getMessage() {
                 return message;
         }
 
+        /**
+         * Gets the list of validation errors.
+         *
+         * @return A list of validation errors.
+         */
+        public List<String> getErrors() {
+                return errors;
+        }
+
+        /**
+         * Gets the underlying throwable.
+         *
+         * @return The underlying throwable.
+         */
         public Throwable getThrowable() {
                 return throwable;
         }
 
+        /**
+         * Gets the HTTP status code associated with this exception.
+         *
+         * @return The HTTP status code.
+         */
         public HttpStatus getHttpStatus() {
                 return httpStatus;
         }
 
-        public ZonedDateTime getZonedDateTime() {
-                return zonedDateTime;
+        /**
+         * Gets the timestamp when this exception occurred.
+         *
+         * @return The timestamp.
+         */
+        public LocalDateTime getDate() {
+                return date;
+        }
+
+        /**
+         * Converts the exception details to a map for constructing the error response
+         * payload.
+         *
+         * @return A map representing the error response payload.
+         */
+        public Map<String, Object> toErrorResponseMap() {
+                return Map.of(
+                                "message", getMessage(),
+                                "errors", getErrors(),
+                                "httpStatus", getHttpStatus().toString(),
+                                "zonedDateTime", getDate());
         }
 }
