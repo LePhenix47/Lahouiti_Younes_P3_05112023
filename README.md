@@ -126,33 +126,39 @@ The project follows a classic layered architecture (Controller/Service/Java Pers
 ## Dependencies
 
 1. Spring Boot Starters:
-- spring-boot-starter-data-jpa
-- spring-boot-starter-security
-- spring-boot-starter-web
-- spring-boot-starter-validation
 
-2. Spring Session:
+- `spring-boot-starter-data-jpa`
+- `spring-boot-starter-security`
+- `spring-boot-starter-web`
+- `spring-boot-starter-validation`
 
-- spring-session-core
+1. Spring Session:
+
+- `spring-session-core`
 
 3. Database Connector:
 
-- mysql-connector-j (runtime scope)
+- `mysql-connector-j (runtime scope)`
 
 4. Project Lombok:
 
-- lombok (optional)
+- `lombok (optional)`
 
 5. Testing Dependencies:
 
-- spring-boot-starter-test (test scope)
-- spring-security-test (test scope)
+- `spring-boot-starter-test (test scope)`
+- `spring-security-test (test scope)`
 
 6. JSON Web Token (JWT) Dependencies:
 
-- jjwt-api (version: 0.11.2)
-- jjwt-impl (version: 0.11.2, runtime scope)
-- jjwt-jackson (version: 0.11.2, runtime scope)
+- `jjwt-api (version: 0.11.2)`
+- `jjwt-impl (version: 0.11.2, runtime scope)`
+- `jjwt-jackson (version: 0.11.2, runtime scope)`
+
+7. MapStruct for DTOs:
+
+- `mapstruct (version 1.4.2)`
+- `mapstruct-processor (version 1.4.2)`
 
 ## Authentication and Security
 
