@@ -31,7 +31,7 @@ public class UserService {
      * @param id The identifier of the user.
      * @return An Optional containing the user if found, or empty if not.
      */
-    public Optional<Users> getUser(final Long id) {
+    public Optional<Users> getUserById(final Long id) {
         return userRepository.findById(id);
     }
 
@@ -91,7 +91,7 @@ public class UserService {
      * @param password The password to be verified.
      * @return True if the password matches, false otherwise.
      */
-    public boolean isPasswordValid(Users user, String password) {
+    public boolean isPasswordValid(String password, Users user) {
         return passwordEncoder.matches(password, user.getPassword());
     }
 

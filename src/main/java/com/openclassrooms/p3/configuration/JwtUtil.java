@@ -7,10 +7,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 
 import com.openclassrooms.p3.exception.ApiException;
@@ -77,6 +73,25 @@ public class JwtUtil {
         } catch (Exception e) {
             // Token extraction failed, convert it to ApiException
             GlobalExceptionHandler.handleLogicError("JWT token extraction failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            return null; // Return null as a placeholder, this line won't be reached if an exception
+                         // occurs.
+        }
+    }
+
+    /**
+     * Extracts the JWT from the Authorization header.
+     *
+     * @param authorizationHeader The Authorization header containing the JWT.
+     * @return The extracted JWT.
+     * @throws ApiException if there is an error during JWT extraction.
+     */
+    public static String extractJwtFromHeader(String authorizationHeader) {
+        try {
+            // Assuming the header format is "Bearer <JWT>"
+            return authorizationHeader.substring(7); // Skip "Bearer " to get the actual JWT
+        } catch (Exception e) {
+            // Handle the exception and convert it to ApiException
+            GlobalExceptionHandler.handleLogicError("JWT extraction failed", HttpStatus.BAD_REQUEST);
             return null; // Return null as a placeholder, this line won't be reached if an exception
                          // occurs.
         }

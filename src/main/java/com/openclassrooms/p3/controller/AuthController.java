@@ -19,6 +19,8 @@ import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,13 +52,11 @@ public class AuthController {
         try {
             Boolean payloadIsInvalid = bindingResult.hasErrors();
             if (payloadIsInvalid) {
-                // Refactored to use handlePayloadError method
                 GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
             }
 
             Boolean hasAlreadyRegistered = userService.isEmailInUse(request.email());
             if (hasAlreadyRegistered) {
-                // Refactored to use handleLogicError method
                 GlobalExceptionHandler.handleLogicError("Email is already in use", HttpStatus.CONFLICT);
             }
 
@@ -82,9 +82,29 @@ public class AuthController {
      * @return ResponseEntity<AuthResponse> A JWT if login is successful.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthLoginRequest request) {
-        // TODO: Implement login logic
+    public ResponseEntity<?> login(@Valid @RequestBody AuthLoginRequest request, BindingResult bindingResult) {
         try {
+            Boolean payloadIsInvalid = bindingResult.hasErrors();
+            if (payloadIsInvalid) {
+                GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
+            }
+
+            // TODO: we need to check if the email exists → .orElseThrow
+            Optional<Users> optionalUser = userService.getUserByEmail(request.email());
+
+            Users user = optionalUser.get();
+
+            Boolean passwordIsIncorrect = !userService.isPasswordValid(request.password(), user);
+            if (passwordIsIncorrect) {
+                GlobalExceptionHandler.handleLogicError("Invalid password", HttpStatus.UNAUTHORIZED);
+            }
+
+            UserInfoResponse userEntity = userMapper.toDtoUser(user);
+
+            String jwtToken = JwtUtil.generateJwtToken(userEntity.id());
+
+            AuthResponse authResponse = new AuthResponse(jwtToken);
+            return ResponseEntity.status(HttpStatus.OK).body(authResponse);
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
         }
@@ -96,9 +116,28 @@ public class AuthController {
      * @return ResponseEntity<AuthResponse> containing the user info.
      */
     @GetMapping("/me")
-    public ResponseEntity<?> getMe() {
-        // TODO: Implement getMe logic
+    public ResponseEntity<?> getMe(@RequestHeader("Authorization") String authorizationHeader) {
         try {
+            // Extract JWT from Authorization header
+            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+            return ResponseEntity.status(HttpStatus.OK).body(jwtToken);
+            // // Extract user ID from JWT
+            // Long userId = JwtUtil.extractUserId(jwtToken);
+
+            // // Fetch user information based on the user ID
+            // Optional<Users> optionalUser = userService.getUserById(userId);
+
+            // Users user = optionalUser.get();
+            // // Convert user information to DTO
+            // UserInfoResponse userEntity = userMapper.toDtoUser(user);
+
+            // // Check if the user exists
+            // if (optionalUser.isEmpty()) {
+            // // Handle scenario where user is not found
+            // GlobalExceptionHandler.handleLogicError("User not found",
+            // HttpStatus.NOT_FOUND);
+            // }
+            // return ResponseEntity.status(HttpStatus.OK).body(userEntity);
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
         }
