@@ -2,6 +2,7 @@ package com.openclassrooms.p3.controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.openclassrooms.p3.configuration.JwtUtil;
 import com.openclassrooms.p3.exception.ApiException;
 import com.openclassrooms.p3.mapper.UserMapper;
 import com.openclassrooms.p3.model.Users;
@@ -75,12 +76,19 @@ public class AuthController {
                         LocalDateTime.now());
             }
 
-            // Map the request to Users entity using the mapper
             Users user = userService.saveUserBySignUp(request);
+
+            // Map the request to Users entity using the mapper
             UserInfoResponse userEntity = userMapper.toDtoUser(user);
 
+            // Generate JWT token
+            String jwtToken = JwtUtil.generateJwtToken(userEntity.id());
+
+            // Return the saved user along with the JWT token
+            AuthResponse authResponse = new AuthResponse(jwtToken);
+
             // Return the saved user with a 201 Created status
-            return ResponseEntity.status(HttpStatus.CREATED).body(userEntity);
+            return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
         } catch (ApiException ex) {
             Map<String, Object> errorResponse = ex.toErrorResponseMap();
             return ResponseEntity.status(ex.getHttpStatus()).body(errorResponse);
