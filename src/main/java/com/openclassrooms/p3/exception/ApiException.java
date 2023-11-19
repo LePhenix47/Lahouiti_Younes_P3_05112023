@@ -1,10 +1,9 @@
 package com.openclassrooms.p3.exception;
 
+import org.springframework.http.HttpStatus;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-
-import org.springframework.http.HttpStatus;
 
 /**
  * Custom exception class for handling API-related errors.
@@ -26,11 +25,6 @@ public class ApiException extends RuntimeException {
         private final List<String> errors;
 
         /**
-         * The underlying throwable that caused this exception (if applicable).
-         */
-        private final Throwable throwable;
-
-        /**
          * The HTTP status code associated with this exception.
          */
         private final HttpStatus httpStatus;
@@ -40,12 +34,11 @@ public class ApiException extends RuntimeException {
          */
         private final LocalDateTime date;
 
-        public ApiException(String message, List<String> errors, Throwable throwable, HttpStatus httpStatus,
-                        LocalDateTime date) {
+        public ApiException(String message, List<String> errors, HttpStatus httpStatus, LocalDateTime date) {
                 super(message);
+
                 this.message = message;
                 this.errors = errors;
-                this.throwable = throwable;
                 this.httpStatus = httpStatus;
                 this.date = date;
         }
@@ -69,15 +62,6 @@ public class ApiException extends RuntimeException {
         }
 
         /**
-         * Gets the underlying throwable.
-         *
-         * @return The underlying throwable.
-         */
-        public Throwable getThrowable() {
-                return throwable;
-        }
-
-        /**
          * Gets the HTTP status code associated with this exception.
          *
          * @return The HTTP status code.
@@ -96,16 +80,11 @@ public class ApiException extends RuntimeException {
         }
 
         /**
-         * Converts the exception details to a map for constructing the error response
-         * payload.
+         * Converts the exception details to an ApiErrorResponse record.
          *
-         * @return A map representing the error response payload.
+         * @return An ApiErrorResponse representing the error response.
          */
-        public Map<String, Object> toErrorResponseMap() {
-                return Map.of(
-                                "message", getMessage(),
-                                "errors", getErrors(),
-                                "httpStatus", getHttpStatus().toString(),
-                                "zonedDateTime", getDate());
+        public ApiErrorResponse toErrorResponse() {
+                return new ApiErrorResponse(getMessage(), getErrors(), getHttpStatus(), date);
         }
 }
