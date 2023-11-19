@@ -67,16 +67,16 @@ public class AuthController {
 
             Boolean hasAlreadyRegistered = userService.isEmailInUse(request.email());
             if (hasAlreadyRegistered) {
-                List<String> hasAlreadyRegisteredError = new ArrayList<>();
-                hasAlreadyRegisteredError.add("Email is already in use");
+                List<String> errorMessageList = new ArrayList<>();
+                errorMessageList.add("Email is already in use");
 
                 // Throw ApiException with a specific error message
-                throw new ApiException("Email is already in use", hasAlreadyRegisteredError, null, HttpStatus.CONFLICT,
+                throw new ApiException("Email is already in use", errorMessageList, null, HttpStatus.CONFLICT,
                         LocalDateTime.now());
             }
 
             // Map the request to Users entity using the mapper
-            Users user = userService.saveUserFromRegistrationRequest(request);
+            Users user = userService.saveUserBySignUp(request);
             UserInfoResponse userEntity = userMapper.toDtoUser(user);
 
             // Return the saved user with a 201 Created status

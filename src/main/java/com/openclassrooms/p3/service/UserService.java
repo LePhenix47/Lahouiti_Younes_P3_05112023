@@ -64,23 +64,13 @@ public class UserService {
     }
 
     /**
-     * Save or update a user using information from the registration request.
+     * Retrieve a user by their email address.
      *
-     * @param registrationRequest The registration request containing user details.
-     * @return The saved or updated user.
+     * @param email The email address of the user.
+     * @return An Optional containing the user if found, or empty if not.
      */
-    public Users saveUserFromRegistrationRequest(AuthRegisterRequest registrationRequest) {
-        Users user = new Users();
-
-        LocalDateTime currentTime = LocalDateTime.now();
-
-        user.setName(registrationRequest.name());
-        user.setEmail(registrationRequest.email());
-        user.setPassword(passwordEncoder.encode(registrationRequest.password()));
-        user.setCreatedAt(currentTime);
-        user.setUpdatedAt(currentTime);
-
-        return userRepository.save(user);
+    public Optional<Users> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     /**
@@ -90,7 +80,8 @@ public class UserService {
      * @return True if the email is already in use, false otherwise.
      */
     public boolean isEmailInUse(String email) {
-        return true;
+        Optional<Users> existingUser = getUserByEmail(email);
+        return existingUser.isPresent();
     }
 
     /**
@@ -103,4 +94,25 @@ public class UserService {
     public boolean isPasswordValid(Users user, String password) {
         return passwordEncoder.matches(password, user.getPassword());
     }
+
+    /**
+     * Save or update a user using information from the registration request.
+     *
+     * @param registrationRequest The registration request containing user details.
+     * @return The saved or updated user.
+     */
+    public Users saveUserBySignUp(AuthRegisterRequest registrationRequest) {
+        Users user = new Users();
+
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        user.setName(registrationRequest.name());
+        user.setEmail(registrationRequest.email());
+        user.setPassword(passwordEncoder.encode(registrationRequest.password()));
+        user.setCreatedAt(currentTime);
+        user.setUpdatedAt(currentTime);
+
+        return saveUser(user);
+    }
+
 }
