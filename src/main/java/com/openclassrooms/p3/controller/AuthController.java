@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import com.openclassrooms.p3.configuration.JwtUtil;
 import com.openclassrooms.p3.exception.ApiErrorResponse;
 import com.openclassrooms.p3.exception.ApiException;
-import com.openclassrooms.p3.exception.ApiExceptionHandler;
+import com.openclassrooms.p3.exception.GlobalExceptionHandler;
 import com.openclassrooms.p3.mapper.UserMapper;
 import com.openclassrooms.p3.model.Users;
 import com.openclassrooms.p3.payload.request.AuthLoginRequest;
@@ -50,42 +50,29 @@ public class AuthController {
         try {
             Boolean payloadIsInvalid = bindingResult.hasErrors();
             if (payloadIsInvalid) {
-                // Handle validation errors
-                List<String> payloadErrors = new ArrayList<>();
-                bindingResult.getAllErrors().forEach(error -> payloadErrors.add(error.getDefaultMessage()));
-
-                // Throw ApiException with validation errors
-                throw new ApiException("Bad payload", payloadErrors, HttpStatus.BAD_REQUEST,
-                        LocalDateTime.now());
+                // Refactored to use handlePayloadError method
+                GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
             }
 
             Boolean hasAlreadyRegistered = userService.isEmailInUse(request.email());
             if (hasAlreadyRegistered) {
-                List<String> errorMessageList = new ArrayList<>();
-                errorMessageList.add("Email is already in use");
-
-                // Throw ApiException with a specific error message
-                throw new ApiException(errorMessageList.get(0), errorMessageList, HttpStatus.CONFLICT,
-                        LocalDateTime.now());
+                // Refactored to use handleLogicError method
+                GlobalExceptionHandler.handleLogicError("Email is already in use", HttpStatus.CONFLICT);
             }
 
             Users user = userService.saveUserBySignUp(request);
 
-            // Map the request to Users entity using the mapper
             UserInfoResponse userEntity = userMapper.toDtoUser(user);
 
-            // Generate JWT token
             String jwtToken = JwtUtil.generateJwtToken(userEntity.id());
 
-            // Return the saved user along with the JWT token
             AuthResponse authResponse = new AuthResponse(jwtToken);
 
             // Return the saved user with a 201 Created status
             return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
         } catch (ApiException ex) {
-            return ApiExceptionHandler.handleApiException(ex);
+            return GlobalExceptionHandler.handleApiException(ex);
         }
-
     }
 
     /**
@@ -95,8 +82,12 @@ public class AuthController {
      * @return ResponseEntity<AuthResponse> A JWT if login is successful.
      */
     @PostMapping("/login")
-    public void login(@RequestBody AuthLoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody AuthLoginRequest request) {
         // TODO: Implement login logic
+        try {
+        } catch (ApiException ex) {
+            return GlobalExceptionHandler.handleApiException(ex);
+        }
     }
 
     /**
@@ -105,7 +96,11 @@ public class AuthController {
      * @return ResponseEntity<AuthResponse> containing the user info.
      */
     @GetMapping("/me")
-    public void getMe() {
+    public ResponseEntity<?> getMe() {
         // TODO: Implement getMe logic
+        try {
+        } catch (ApiException ex) {
+            return GlobalExceptionHandler.handleApiException(ex);
+        }
     }
 }

@@ -78,13 +78,4 @@ public class ApiException extends RuntimeException {
         public LocalDateTime getDate() {
                 return date;
         }
-
-        /**
-         * Converts the exception details to an ApiErrorResponse record.
-         *
-         * @return An ApiErrorResponse representing the error response.
-         */
-        public ApiErrorResponse toErrorResponse() {
-                return new ApiErrorResponse(getMessage(), getErrors(), getHttpStatus(), date);
-        }
 }
