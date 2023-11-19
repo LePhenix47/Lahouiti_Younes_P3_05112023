@@ -14,6 +14,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import com.openclassrooms.p3.exception.ApiException;
+import com.openclassrooms.p3.exception.GlobalExceptionHandler;
 
 public class JwtUtil {
 
@@ -36,10 +37,9 @@ public class JwtUtil {
             return token;
         } catch (Exception e) {
             // Handle the exception and convert it to ApiException
-            List<String> errors = new ArrayList<>();
-            errors.add("Error generating JWT token");
-            throw new ApiException("JWT generation failed", errors, HttpStatus.INTERNAL_SERVER_ERROR,
-                    LocalDateTime.now());
+            GlobalExceptionHandler.handleLogicError("JWT generation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            return null; // Return null as a placeholder, this line won't be reached if an exception
+                         // occurs.
         }
     }
 
@@ -56,9 +56,9 @@ public class JwtUtil {
             return true;
         } catch (Exception e) {
             // Token validation failed, convert it to ApiException
-            List<String> errors = new ArrayList<>();
-            errors.add("Error validating JWT token");
-            throw new ApiException("JWT validation failed", errors, HttpStatus.UNAUTHORIZED, LocalDateTime.now());
+            GlobalExceptionHandler.handleLogicError("JWT validation failed", HttpStatus.UNAUTHORIZED);
+            return false; // Return false as a placeholder, this line won't be reached if an exception
+                          // occurs.
         }
     }
 
@@ -75,11 +75,10 @@ public class JwtUtil {
             Claims claims = claimsJws.getBody();
             return Long.parseLong(claims.getSubject());
         } catch (Exception e) {
-            // * Token extraction failed
-            List<String> errors = new ArrayList<>();
-            errors.add("Error extracting user ID from JWT token");
-            throw new ApiException("JWT token extraction failed", errors, HttpStatus.INTERNAL_SERVER_ERROR,
-                    LocalDateTime.now());
+            // Token extraction failed, convert it to ApiException
+            GlobalExceptionHandler.handleLogicError("JWT token extraction failed", HttpStatus.INTERNAL_SERVER_ERROR);
+            return null; // Return null as a placeholder, this line won't be reached if an exception
+                         // occurs.
         }
     }
 }
