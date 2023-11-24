@@ -89,8 +89,12 @@ public class AuthController {
                 GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
             }
 
-            // TODO: we need to check if the email exists → .orElseThrow
             Optional<Users> optionalUser = userService.getUserByEmail(request.email());
+
+            Boolean hasNoUserFound = optionalUser.isEmpty();
+            if (hasNoUserFound) {
+                GlobalExceptionHandler.handleLogicError("User not found", HttpStatus.NOT_FOUND);
+            }
 
             Users user = optionalUser.get();
 
@@ -120,24 +124,25 @@ public class AuthController {
         try {
             // Extract JWT from Authorization header
             String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
-            return ResponseEntity.status(HttpStatus.OK).body(jwtToken);
-            // // Extract user ID from JWT
-            // Long userId = JwtUtil.extractUserId(jwtToken);
 
-            // // Fetch user information based on the user ID
-            // Optional<Users> optionalUser = userService.getUserById(userId);
+            // Extract user ID from JWT
+            Long userId = JwtUtil.extractUserId(jwtToken);
 
-            // Users user = optionalUser.get();
-            // // Convert user information to DTO
-            // UserInfoResponse userEntity = userMapper.toDtoUser(user);
+            // Fetch user information based on the user ID
+            Optional<Users> optionalUser = userService.getUserById(userId);
+            Boolean userDoesNotExist = optionalUser.isEmpty();
+            // Check if the user exists
+            if (userDoesNotExist) {
+                // Handle scenario where user is not found
+                GlobalExceptionHandler.handleLogicError("User not found",
+                        HttpStatus.NOT_FOUND);
+            }
 
-            // // Check if the user exists
-            // if (optionalUser.isEmpty()) {
-            // // Handle scenario where user is not found
-            // GlobalExceptionHandler.handleLogicError("User not found",
-            // HttpStatus.NOT_FOUND);
-            // }
-            // return ResponseEntity.status(HttpStatus.OK).body(userEntity);
+            Users user = optionalUser.get();
+            // Convert user information to DTO
+            UserInfoResponse userEntity = userMapper.toDtoUser(user);
+
+            return ResponseEntity.status(HttpStatus.OK).body(userEntity);
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
         }

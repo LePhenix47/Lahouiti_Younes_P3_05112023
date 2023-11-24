@@ -23,7 +23,7 @@ public class JwtUtil {
      * @return The JWT generated.
      * @throws ApiException if there is an error during JWT generation.
      */
-    public static String generateJwtToken(Long id) {
+    public static String generateJwtToken(Long id) throws ApiException {
         try {
             String token = Jwts.builder()
                     .setSubject(String.valueOf(id))
@@ -31,30 +31,27 @@ public class JwtUtil {
                     .compact();
 
             return token;
-        } catch (Exception e) {
+        } catch (Exception exception) {
             // Handle the exception and convert it to ApiException
-            GlobalExceptionHandler.handleLogicError("JWT generation failed", HttpStatus.INTERNAL_SERVER_ERROR);
-            return null; // Return null as a placeholder, this line won't be reached if an exception
-                         // occurs.
+            GlobalExceptionHandler.handleLogicError("JWT generation failed: " + exception.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return null;
         }
     }
 
     /**
-     * Validates a JWT token.
+     * Checks if a JWT token is valid.
      *
-     * @param token The JWT token to validate.
-     * @return True if the token is valid
-     * @throws ApiException if otherwise the token is invalid
+     * @param token The JWT token.
+     * @return True if the token is valid; false otherwise.
      */
-    public static boolean validateJwtToken(String token) {
+    public static boolean isTokenValid(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            // Token validation failed, convert it to ApiException
-            GlobalExceptionHandler.handleLogicError("JWT validation failed", HttpStatus.UNAUTHORIZED);
-            return false; // Return false as a placeholder, this line won't be reached if an exception
-                          // occurs.
+        } catch (Exception exception) {
+            // Token validation failed
+            return false;
         }
     }
 
@@ -65,16 +62,22 @@ public class JwtUtil {
      * @return The user ID extracted from the token.
      * @throws ApiException if there is an error during token extraction.
      */
-    public static Long extractUserId(String token) {
+    public static Long extractUserId(String token) throws ApiException {
         try {
+            Boolean jwtIsInvalid = !isTokenValid(token);
+            if (jwtIsInvalid) {
+                GlobalExceptionHandler.handleLogicError("The provided JWT is invalid", HttpStatus.BAD_REQUEST);
+            }
+
             Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
             Claims claims = claimsJws.getBody();
             return Long.parseLong(claims.getSubject());
-        } catch (Exception e) {
+        } catch (Exception exception) {
             // Token extraction failed, convert it to ApiException
-            GlobalExceptionHandler.handleLogicError("JWT token extraction failed", HttpStatus.INTERNAL_SERVER_ERROR);
-            return null; // Return null as a placeholder, this line won't be reached if an exception
-                         // occurs.
+            GlobalExceptionHandler.handleLogicError(
+                    "JWT token extraction failed: " + exception.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return null;
         }
     }
 
@@ -85,15 +88,13 @@ public class JwtUtil {
      * @return The extracted JWT.
      * @throws ApiException if there is an error during JWT extraction.
      */
-    public static String extractJwtFromHeader(String authorizationHeader) {
+    public static String extractJwtFromHeader(String authorizationHeader) throws ApiException {
         try {
             // Assuming the header format is "Bearer <JWT>"
             return authorizationHeader.substring(7); // Skip "Bearer " to get the actual JWT
-        } catch (Exception e) {
-            // Handle the exception and convert it to ApiException
-            GlobalExceptionHandler.handleLogicError("JWT extraction failed", HttpStatus.BAD_REQUEST);
-            return null; // Return null as a placeholder, this line won't be reached if an exception
-                         // occurs.
+        } catch (Exception exception) {
+            GlobalExceptionHandler.handleLogicError("JWT extraction from headers failed: ", HttpStatus.BAD_REQUEST);
+            return null;
         }
     }
 }
