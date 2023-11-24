@@ -11,7 +11,6 @@ import com.openclassrooms.p3.payload.request.AuthLoginRequest;
 import com.openclassrooms.p3.payload.request.AuthRegisterRequest;
 import com.openclassrooms.p3.payload.response.AuthResponse;
 import com.openclassrooms.p3.payload.response.UserInfoResponse;
-import com.openclassrooms.p3.service.JwtService;
 import com.openclassrooms.p3.service.UserService;
 
 import jakarta.validation.Valid;
@@ -30,8 +29,6 @@ import org.springframework.validation.BindingResult;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    private JwtService jwtService;
 
     @Autowired
     private UserService userService;
@@ -130,7 +127,7 @@ public class AuthController {
 
             Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
             if (hasJwtExtractionError) {
-                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.BAD_REQUEST);
+                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
             }
 
             Long userIdFromToken = optionalUserIdFromToken.get();
@@ -149,8 +146,8 @@ public class AuthController {
 
             Boolean hasUserIdMismatch = userEntity.id() != userIdFromToken;
             if (hasUserIdMismatch) {
-                GlobalExceptionHandler.handleLogicError("An unexpected server error occurred",
-                        HttpStatus.UNAUTHORIZED);
+                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred",
+                        HttpStatus.FORBIDDEN);
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(userEntity);
