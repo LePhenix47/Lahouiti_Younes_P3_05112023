@@ -3,7 +3,6 @@ package com.openclassrooms.p3.controller;
 import org.springframework.web.bind.annotation.*;
 
 import com.openclassrooms.p3.configuration.JwtUtil;
-import com.openclassrooms.p3.exception.ApiErrorResponse;
 import com.openclassrooms.p3.exception.ApiException;
 import com.openclassrooms.p3.exception.GlobalExceptionHandler;
 import com.openclassrooms.p3.mapper.UserMapper;
@@ -12,13 +11,11 @@ import com.openclassrooms.p3.payload.request.AuthLoginRequest;
 import com.openclassrooms.p3.payload.request.AuthRegisterRequest;
 import com.openclassrooms.p3.payload.response.AuthResponse;
 import com.openclassrooms.p3.payload.response.UserInfoResponse;
+import com.openclassrooms.p3.service.JwtService;
 import com.openclassrooms.p3.service.UserService;
 
 import jakarta.validation.Valid;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +30,9 @@ import org.springframework.validation.BindingResult;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    @Autowired
+    private JwtService jwtService;
+
     @Autowired
     private UserService userService;
 
@@ -91,8 +91,8 @@ public class AuthController {
 
             Optional<Users> optionalUser = userService.getUserByEmail(request.email());
 
-            Boolean hasNoUserFound = optionalUser.isEmpty();
-            if (hasNoUserFound) {
+            Boolean userNotFound = optionalUser.isEmpty();
+            if (userNotFound) {
                 GlobalExceptionHandler.handleLogicError("User not found", HttpStatus.NOT_FOUND);
             }
 
@@ -122,23 +122,8 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> getMe(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // Extract JWT from Authorization header
-            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
 
-            // Extract user ID from JWT
-            Long userId = JwtUtil.extractUserId(jwtToken);
-
-            // Fetch user information based on the user ID
-            Optional<Users> optionalUser = userService.getUserById(userId);
-            Boolean userDoesNotExist = optionalUser.isEmpty();
-            // Check if the user exists
-            if (userDoesNotExist) {
-                // Handle scenario where user is not found
-                GlobalExceptionHandler.handleLogicError("User not found",
-                        HttpStatus.NOT_FOUND);
-            }
-
-            Users user = optionalUser.get();
+            Users user = jwtService.getUserFromJwt(authorizationHeader);
             // Convert user information to DTO
             UserInfoResponse userEntity = userMapper.toDtoUser(user);
 
