@@ -122,10 +122,36 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> getMe(@RequestHeader("Authorization") String authorizationHeader) {
         try {
+            // Extract JWT from Authorization header
+            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
 
-            Users user = jwtService.getUserFromJwt(authorizationHeader);
+            // Extract user ID from JWT
+            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+
+            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+            if (hasJwtExtractionError) {
+                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.BAD_REQUEST);
+            }
+
+            Long userIdFromToken = optionalUserIdFromToken.get();
+            // Fetch user information based on the user ID
+            Optional<Users> optionalUser = userService.getUserById(userIdFromToken);
+
+            Boolean userDoesNotExist = optionalUser.isEmpty();
+            if (userDoesNotExist) {
+                GlobalExceptionHandler.handleLogicError("An unexpected server error occurred",
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            Users user = optionalUser.get();
             // Convert user information to DTO
             UserInfoResponse userEntity = userMapper.toDtoUser(user);
+
+            Boolean hasUserIdMismatch = userEntity.id() != userIdFromToken;
+            if (hasUserIdMismatch) {
+                GlobalExceptionHandler.handleLogicError("An unexpected server error occurred",
+                        HttpStatus.UNAUTHORIZED);
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(userEntity);
         } catch (ApiException ex) {

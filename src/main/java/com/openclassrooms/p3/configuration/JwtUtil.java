@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
+import java.util.Optional;
 
 public class JwtUtil {
 
@@ -47,14 +48,18 @@ public class JwtUtil {
      * Extracts the user ID from a JWT token.
      *
      * @param token The JWT token.
-     * @return The user ID extracted from the token.
+     * @return The user ID extracted from the token, or empty Optional in case of an
+     *         exception.
      */
-    public static Long extractUserId(String token) {
+    public static Optional<Long> extractUserId(String token) {
+        try {
+            Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
+            Claims claims = claimsJws.getBody();
 
-        Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
-        Claims claims = claimsJws.getBody();
-
-        return Long.parseLong(claims.getSubject());
+            return Optional.of(Long.parseLong(claims.getSubject()));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     /**
