@@ -1,5 +1,6 @@
 package com.openclassrooms.p3.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import com.openclassrooms.p3.configuration.JwtUtil;
 import com.openclassrooms.p3.exception.ApiException;
 import com.openclassrooms.p3.exception.GlobalExceptionHandler;
+import com.openclassrooms.p3.mapper.RentalMapper;
+import com.openclassrooms.p3.mapper.UserMapper;
+import com.openclassrooms.p3.model.Rental;
 import com.openclassrooms.p3.model.Users;
 import com.openclassrooms.p3.payload.request.RentalUpdateRequest;
+import com.openclassrooms.p3.payload.response.RentalAllResponse;
+import com.openclassrooms.p3.payload.response.RentalSingleResponse;
 // import com.openclassrooms.p3.payload.response.RentalAllResponse;
 // import com.openclassrooms.p3.payload.response.RentalSingleResponse;
 // import com.openclassrooms.p3.payload.response.ResponseMessage;
@@ -25,6 +31,9 @@ import com.openclassrooms.p3.service.UserService;
 @RestController
 @RequestMapping("/api/rentals")
 public class RentalController {
+
+    @Autowired
+    private RentalMapper rentalMapper;
 
     @Autowired
     private RentalService rentalService;
@@ -50,17 +59,18 @@ public class RentalController {
                 GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
             }
             Long userIdFromToken = optionalUserIdFromToken.get();
-            return ResponseEntity.status(HttpStatus.OK).body(userIdFromToken);
-            // // Fetch user information based on the user ID
-            // Optional<Users> optionalSpecificUser =
-            // userService.getUserById(userIdFromToken);
-            // Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
-            // if (userWithIdDoesNotExist) {
-            // GlobalExceptionHandler.handleLogicError("User does not exist",
-            // HttpStatus.NOT_FOUND);
-            // }
+            // Fetch user information based on the user ID
+            Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
+            Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+            if (userWithIdDoesNotExist) {
+                GlobalExceptionHandler.handleLogicError("User does not exist",
+                        HttpStatus.NOT_FOUND);
+            }
 
-            // return ResponseEntity.status(HttpStatus.OK).body("TEST");
+            Iterable<Rental> allRentals = rentalService.getRentals();
+            List<RentalSingleResponse> rentalDtos = rentalMapper.toDtoRentals(allRentals);
+
+            return ResponseEntity.status(HttpStatus.OK).body(rentalDtos);
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
         }

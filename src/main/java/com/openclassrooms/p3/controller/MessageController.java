@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import com.openclassrooms.p3.configuration.JwtUtil;
 import com.openclassrooms.p3.exception.ApiException;
 import com.openclassrooms.p3.exception.GlobalExceptionHandler;
-import com.openclassrooms.p3.mapper.UserMapper;
 import com.openclassrooms.p3.model.Rental;
 import com.openclassrooms.p3.model.Users;
 import com.openclassrooms.p3.payload.request.MessageRequest;
 import com.openclassrooms.p3.payload.response.ResponseMessage;
-import com.openclassrooms.p3.payload.response.UserInfoResponse;
 import com.openclassrooms.p3.service.MessageService;
 import com.openclassrooms.p3.service.RentalService;
 import com.openclassrooms.p3.service.UserService;
@@ -33,9 +31,6 @@ public class MessageController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserMapper userMapper;
 
     @Autowired
     private RentalService rentalService;
