@@ -1,10 +1,12 @@
 package com.openclassrooms.p3.service;
 
 import com.openclassrooms.p3.model.Rental;
+import com.openclassrooms.p3.payload.request.RentalUpdateRequest;
 import com.openclassrooms.p3.repository.RentalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import lombok.Data;
@@ -48,12 +50,51 @@ public class RentalService {
     }
 
     /**
-     * Save or update a rental.
+     * Saves a rental.
+     *
+     * @param rentalUpdateRequest The rental request containing details.
+     * @return The saved or updated rental.
+     */
+    public Rental saveRental(RentalUpdateRequest rentalUpdateRequest) {
+        Rental rental = new Rental();
+
+        // Populate rental object with data from rentalUpdateRequest
+        rental.setName(rentalUpdateRequest.name());
+        rental.setSurface(rentalUpdateRequest.surface());
+        rental.setPrice(rentalUpdateRequest.price());
+        rental.setDescription(rentalUpdateRequest.description());
+        rental.setPicture(rentalUpdateRequest.picture());
+
+        // Add additional logic or validation as needed
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        rental.setCreatedAt(currentTime);
+        rental.setUpdatedAt(currentTime);
+
+        return rentalRepository.save(rental);
+    }
+
+    /**
+     * Updates a rental.
      *
      * @param rental The rental to be saved or updated.
      * @return The saved or updated rental.
      */
-    public Rental saveRental(Rental rental) {
-        return rentalRepository.save(rental);
+    public Rental updateRental(RentalUpdateRequest rentalUpdateRequest) {
+        Rental existingRental = new Rental();
+
+        // Update the existing rental with data from rentalUpdateRequest
+        existingRental.setName(rentalUpdateRequest.name());
+        existingRental.setSurface(rentalUpdateRequest.surface());
+        existingRental.setPrice(rentalUpdateRequest.price());
+        existingRental.setDescription(rentalUpdateRequest.description());
+        existingRental.setPicture(rentalUpdateRequest.picture());
+
+        // Add additional logic or validation as needed
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        existingRental.setUpdatedAt(currentTime);
+
+        return rentalRepository.save(existingRental);
     }
 }

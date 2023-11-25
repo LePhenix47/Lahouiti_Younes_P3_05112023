@@ -83,8 +83,42 @@ public class RentalController {
      * @return ResponseEntity<RentalSingleResponse> with rental information.
      */
     @GetMapping("/{id}")
-    public void getRental(@PathVariable final Long id) {
-        // TODO: Implement getRental logic
+    public ResponseEntity<?> getRental(@PathVariable final Long id,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+
+            // Extract user ID from JWT
+            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+
+            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+            if (hasJwtExtractionError) {
+                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
+            }
+            Long userIdFromToken = optionalUserIdFromToken.get();
+            // Fetch user information based on the user ID
+            Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
+            Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+            if (userWithIdDoesNotExist) {
+                GlobalExceptionHandler.handleLogicError("User does not exist",
+                        HttpStatus.NOT_FOUND);
+            }
+
+            Optional<Rental> optionalRental = rentalService.getRental(id);
+            Boolean rentalDoesNotExist = optionalRental.isEmpty();
+            if (rentalDoesNotExist) {
+                GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
+                        HttpStatus.FORBIDDEN);
+            }
+
+            Rental rental = optionalRental.get();
+
+            RentalSingleResponse rentalDto = rentalMapper.toDtoRental(rental);
+
+            return ResponseEntity.status(HttpStatus.OK).body(rentalDto);
+        } catch (ApiException ex) {
+            return GlobalExceptionHandler.handleApiException(ex);
+        }
     }
 
     /**
@@ -96,7 +130,12 @@ public class RentalController {
      */
     @PostMapping("/")
     public void addRental(@RequestParam RentalUpdateRequest request) {
-        // TODO: Implement addRental logic
+        try {
+            // TODO: Implement addRental logic
+
+        } catch (ApiException ex) {
+            return GlobalExceptionHandler.handleApiException(ex);
+        }
     }
 
     /**
@@ -110,6 +149,11 @@ public class RentalController {
     @PutMapping("/{id}")
     public void updateRental(@PathVariable final Long id,
             @RequestParam RentalUpdateRequest request) {
-        // TODO: Implement updateRental logic
+        try {
+            // TODO: Implement updateRental logic
+
+        } catch (ApiException ex) {
+            return GlobalExceptionHandler.handleApiException(ex);
+        }
     }
 }
