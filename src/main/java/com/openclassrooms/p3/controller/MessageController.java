@@ -51,7 +51,7 @@ public class MessageController {
      * @return ResponseEntity<ResponseMessage> with information about
      *         the message post.
      */
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<?> postMessage(@Valid @RequestBody MessageRequest request, BindingResult bindingResult,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
@@ -69,28 +69,25 @@ public class MessageController {
             Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
             if (hasJwtExtractionError) {
                 GlobalExceptionHandler.handleLogicError(
-                        "JWT could not extract the userId",
+                        "Could not extract the userId from JWT",
                         HttpStatus.UNAUTHORIZED);
             }
 
             Long userIdFromToken = optionalUserIdFromToken.get();
-            // Fetch user information based on the user ID
-            Optional<Users> optionalUser = userService.getUserById(userIdFromToken);
 
-            Boolean userDoesNotExist = optionalUser.isEmpty();
-            if (userDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("User does not exist",
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            Users user = optionalUser.get();
-            // Convert user information to DTO
-            UserInfoResponse userEntity = userMapper.toDtoUser(user);
-
-            Boolean hasUserIdMismatch = userEntity.id() != userIdFromToken;
+            Boolean hasUserIdMismatch = request.user_id() != userIdFromToken;
             if (hasUserIdMismatch) {
                 GlobalExceptionHandler.handleLogicError("User ID mismatch",
                         HttpStatus.FORBIDDEN);
+            }
+
+            // Fetch user information based on the user ID
+            Optional<Users> optionalUser = userService.getUserById(request.user_id());
+
+            Boolean userDoesNotExist = optionalUser.isEmpty();
+            if (userDoesNotExist) {
+                GlobalExceptionHandler.handleLogicError("User ID does not exist",
+                        HttpStatus.INTERNAL_SERVER_ERROR);
             }
             // !
 
