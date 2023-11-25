@@ -68,7 +68,7 @@ public class RentalController {
             }
 
             Iterable<Rental> allRentals = rentalService.getRentals();
-            List<RentalSingleResponse> rentalDtos = rentalMapper.toDtoRentals(allRentals);
+            RentalAllResponse rentalDtos = rentalMapper.toDtoRentals(allRentals);
 
             return ResponseEntity.status(HttpStatus.OK).body(rentalDtos);
         } catch (ApiException ex) {

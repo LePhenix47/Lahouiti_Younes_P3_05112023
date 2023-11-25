@@ -20,5 +20,5 @@ public interface RentalMapper {
     })
     RentalSingleResponse toDtoRental(Rental rental);
 
-    List<RentalSingleResponse> toDtoRentals(Iterable<Rental> rentals);
+    RentalAllResponse toDtoRentals(Iterable<Rental> rentals);
 }
