@@ -128,10 +128,36 @@ public class RentalController {
      * @return ResponseEntity<ResponseMessage> with information about the rental
      *         addition.
      */
-    @PostMapping("/")
-    public void addRental(@RequestParam RentalUpdateRequest request) {
+    @PostMapping("")
+    public void addRental(@RequestParam RentalUpdateRequest request,
+            @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // TODO: Implement addRental logic
+            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+
+            // Extract user ID from JWT
+            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+
+            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+            if (hasJwtExtractionError) {
+                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
+            }
+            Long userIdFromToken = optionalUserIdFromToken.get();
+            // Fetch user information based on the user ID
+            Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
+            Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+            if (userWithIdDoesNotExist) {
+                GlobalExceptionHandler.handleLogicError("User does not exist",
+                        HttpStatus.NOT_FOUND);
+            }
+
+            Optional<Rental> optionalRental = rentalService.getRental(userIdFromToken);
+            Boolean rentalDoesNotExist = optionalRental.isEmpty();
+            if (rentalDoesNotExist) {
+                GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
+                        HttpStatus.FORBIDDEN);
+            }
+
+            // TODO: Add logic for
 
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
@@ -148,9 +174,34 @@ public class RentalController {
      */
     @PutMapping("/{id}")
     public void updateRental(@PathVariable final Long id,
-            @RequestParam RentalUpdateRequest request) {
+            @RequestParam RentalUpdateRequest request, @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // TODO: Implement updateRental logic
+            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+
+            // Extract user ID from JWT
+            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+
+            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+            if (hasJwtExtractionError) {
+                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
+            }
+            Long userIdFromToken = optionalUserIdFromToken.get();
+            // Fetch user information based on the user ID
+            Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
+            Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+            if (userWithIdDoesNotExist) {
+                GlobalExceptionHandler.handleLogicError("User does not exist",
+                        HttpStatus.NOT_FOUND);
+            }
+
+            Optional<Rental> optionalRental = rentalService.getRental(userIdFromToken);
+            Boolean rentalDoesNotExist = optionalRental.isEmpty();
+            if (rentalDoesNotExist) {
+                GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
+                        HttpStatus.FORBIDDEN);
+            }
+
+            // TODO: Add logic for
 
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
