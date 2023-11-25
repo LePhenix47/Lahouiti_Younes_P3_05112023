@@ -2,8 +2,6 @@ package com.openclassrooms.p3.controller;
 
 import java.util.Optional;
 
-import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
-import org.mapstruct.ap.internal.util.IgnoreJRERequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
