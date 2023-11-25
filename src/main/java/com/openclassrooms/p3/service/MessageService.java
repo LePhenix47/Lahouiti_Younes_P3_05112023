@@ -1,10 +1,12 @@
 package com.openclassrooms.p3.service;
 
 import com.openclassrooms.p3.model.Message;
+import com.openclassrooms.p3.payload.request.MessageRequest;
 import com.openclassrooms.p3.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import lombok.Data;
@@ -53,7 +55,17 @@ public class MessageService {
      * @param message The message to be saved or updated.
      * @return The saved or updated message.
      */
-    public Message saveMessage(Message message) {
-        return messageRepository.save(message);
+    public Message saveMessage(MessageRequest message) {
+        Message newMessage = new Message();
+
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        newMessage.setUserId(message.user_id());
+        newMessage.setRentalId(message.rental_id());
+        newMessage.setMessage(message.message());
+        newMessage.setCreatedAt(currentTime);
+        newMessage.setUpdatedAt(currentTime);
+
+        return messageRepository.save(newMessage);
     }
 }
