@@ -68,7 +68,7 @@ public class RentalController {
             }
 
             Iterable<Rental> allRentals = rentalService.getRentals();
-            RentalAllResponse rentalDtos = rentalMapper.toDtoRentals(allRentals);
+            Iterable<RentalSingleResponse> rentalDtos = rentalMapper.toDtoRentals(allRentals);
 
             return ResponseEntity.status(HttpStatus.OK).body(rentalDtos);
         } catch (ApiException ex) {
@@ -157,7 +157,7 @@ public class RentalController {
                         HttpStatus.FORBIDDEN);
             }
 
-            // TODO: Add logic for
+            // TODO: Add logic to add a rental
 
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
@@ -201,7 +201,7 @@ public class RentalController {
                         HttpStatus.FORBIDDEN);
             }
 
-            // TODO: Add logic for
+            // TODO: Add logic to update a rental
 
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
