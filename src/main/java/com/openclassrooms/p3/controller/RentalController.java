@@ -70,7 +70,9 @@ public class RentalController {
             Iterable<Rental> allRentals = rentalService.getRentals();
             Iterable<RentalSingleResponse> rentalDtos = rentalMapper.toDtoRentals(allRentals);
 
-            return ResponseEntity.status(HttpStatus.OK).body(rentalDtos);
+            RentalAllResponse rentalAllResponse = new RentalAllResponse(rentalDtos);
+
+            return ResponseEntity.status(HttpStatus.OK).body(rentalAllResponse);
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
         }
