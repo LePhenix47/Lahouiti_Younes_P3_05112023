@@ -147,46 +147,48 @@ public class RentalController {
             @RequestParam("description") String description,
             @RequestParam(value = "picture", required = false) MultipartFile picture,
             @RequestHeader("Authorization") String authorizationHeader) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(picture);
+        try {
+            // TODO: Validate the payload
+            return ResponseEntity.status(HttpStatus.CREATED).body(name);
+            // Boolean payloadIsInvalid = bindingResult.hasErrors();
+            // if (payloadIsInvalid) {
+            // GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult,
+            // HttpStatus.BAD_REQUEST);
+            // }
 
-        // try {
-        // Boolean payloadIsInvalid = bindingResult.hasErrors();
-        // if (payloadIsInvalid) {
-        // GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult,
-        // HttpStatus.BAD_REQUEST);
-        // }
+            // String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
 
-        // String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+            // // Extract user ID from JWT
+            // Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
 
-        // // Extract user ID from JWT
-        // Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+            // Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+            // if (hasJwtExtractionError) {
+            // GlobalExceptionHandler.handleLogicError("An unexpected client error
+            // occurred", HttpStatus.UNAUTHORIZED);
+            // }
+            // Long userIdFromToken = optionalUserIdFromToken.get();
+            // // Fetch user information based on the user ID
+            // Optional<Users> optionalSpecificUser =
+            // userService.getUserById(userIdFromToken);
+            // Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+            // if (userWithIdDoesNotExist) {
+            // GlobalExceptionHandler.handleLogicError("User does not exist",
+            // HttpStatus.NOT_FOUND);
+            // }
 
-        // Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-        // if (hasJwtExtractionError) {
-        // GlobalExceptionHandler.handleLogicError("An unexpected client error
-        // occurred", HttpStatus.UNAUTHORIZED);
-        // }
-        // Long userIdFromToken = optionalUserIdFromToken.get();
-        // // Fetch user information based on the user ID
-        // Optional<Users> optionalSpecificUser =
-        // userService.getUserById(userIdFromToken);
-        // Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
-        // if (userWithIdDoesNotExist) {
-        // GlobalExceptionHandler.handleLogicError("User does not exist",
-        // HttpStatus.NOT_FOUND);
-        // }
+            // // Upload image to S3
+            // String imageUrl = s3Service.uploadImage("rental-" + userIdFromToken,
+            // picture);
+            // // TODO: Upload the image to the S3 bucket
+            // // TODO: Save the entire rental with only the AWS S3 URL of the picture
+            // // TODO: Return a string message indicating if the rental upload was
+            // successful
 
-        // // For now, let's assume you have the rental details in the 'request' object
+            // return ResponseEntity.status(HttpStatus.CREATED).body(imageUrl);
 
-        // // Upload image to S3
-        // String imageUrl = s3Service.uploadImage("rental-" + userIdFromToken,
-        // request.picture());
-
-        // return ResponseEntity.status(HttpStatus.CREATED).body(imageUrl);
-
-        // } catch (ApiException ex) {
-        // return GlobalExceptionHandler.handleApiException(ex);
-        // }
+        } catch (ApiException ex) {
+            return GlobalExceptionHandler.handleApiException(ex);
+        }
     }
 
     /**
@@ -204,14 +206,11 @@ public class RentalController {
             @RequestParam("price") BigDecimal price,
             @RequestParam("description") String description,
             @RequestHeader("Authorization") String authorizationHeader) {
-        return ResponseEntity.status(HttpStatus.CREATED).body("Test PUT response for the route api/rentals/{id}");
-
+        return ResponseEntity.status(HttpStatus.OK).body("Test PUT response for the route api/rentals/{id}");
         // try {
         // String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
-
         // // Extract user ID from JWT
         // Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
-
         // Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
         // if (hasJwtExtractionError) {
         // GlobalExceptionHandler.handleLogicError("An unexpected client error
@@ -226,18 +225,26 @@ public class RentalController {
         // GlobalExceptionHandler.handleLogicError("User does not exist",
         // HttpStatus.NOT_FOUND);
         // }
-
         // Optional<Rental> optionalRental = rentalService.getRental(userIdFromToken);
         // Boolean rentalDoesNotExist = optionalRental.isEmpty();
         // if (rentalDoesNotExist) {
         // GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
         // HttpStatus.NOT_FOUND);
         // }
-
+        // // TODO: Verify the userId from the token to the one of the owner_id
         // // TODO: Add logic to update a rental
-
         // } catch (ApiException ex) {
         // return GlobalExceptionHandler.handleApiException(ex);
         // }
+    }
+
+    private void checkUserFromTokenUserId(Long userIdFromToken) {
+        // Fetch user information based on the user ID
+        Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
+        Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+        if (userWithIdDoesNotExist) {
+            GlobalExceptionHandler.handleLogicError("User does not exist",
+                    HttpStatus.NOT_FOUND);
+        }
     }
 }
