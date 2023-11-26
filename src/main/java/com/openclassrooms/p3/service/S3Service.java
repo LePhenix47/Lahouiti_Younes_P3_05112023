@@ -42,7 +42,7 @@ public class S3Service {
                 .build();
     }
 
-    public String uploadImage(String key, MultipartFile file) {
+    public void uploadImage(String key, MultipartFile file) {
         try {
             // Convert MultipartFile to byte[]
             byte[] data = file.getBytes();
@@ -55,11 +55,9 @@ public class S3Service {
             RequestBody requestBody = RequestBody.fromBytes(data);
 
             s3Client.putObject(putObjectRequest, requestBody);
-            return "https://s3." + region + ".amazonaws.com/" + bucketName + "/" + key;
         } catch (S3Exception | java.io.IOException e) {
             // Handle the exception (e.g., log it)
             e.printStackTrace();
-            return null;
         }
     }
 

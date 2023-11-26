@@ -30,6 +30,8 @@ import com.openclassrooms.p3.service.S3Service;
 import com.openclassrooms.p3.service.UserService;
 
 import jakarta.validation.Valid;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 /**
  * Controller for handling rental-related operations.
@@ -142,19 +144,13 @@ public class RentalController {
      */
     @PostMapping("")
     public ResponseEntity<?> addRental(@RequestParam("name") String name,
-            @RequestParam("surface") Integer surface,
-            @RequestParam("price") BigDecimal price,
-            @RequestParam("description") String description,
-            @RequestParam(value = "picture", required = false) MultipartFile picture,
-            @RequestHeader("Authorization") String authorizationHeader) {
+            @Valid @RequestParam("surface") Integer surface,
+            @Valid @RequestParam("price") BigDecimal price,
+            @Valid @RequestParam("description") String description,
+            @Valid @RequestParam(value = "picture", required = false) MultipartFile picture,
+            @Valid @RequestHeader("Authorization") String authorizationHeader) {
         try {
             // TODO: Validate the payload
-            return ResponseEntity.status(HttpStatus.CREATED).body(name);
-            // Boolean payloadIsInvalid = bindingResult.hasErrors();
-            // if (payloadIsInvalid) {
-            // GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult,
-            // HttpStatus.BAD_REQUEST);
-            // }
 
             // String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
 
@@ -176,17 +172,18 @@ public class RentalController {
             // HttpStatus.NOT_FOUND);
             // }
 
-            // // Upload image to S3
-            // String imageUrl = s3Service.uploadImage("rental-" + userIdFromToken,
-            // picture);
-            // // TODO: Upload the image to the S3 bucket
-            // // TODO: Save the entire rental with only the AWS S3 URL of the picture
-            // // TODO: Return a string message indicating if the rental upload was
-            // successful
+            // Upload image to S3
+            s3Service.uploadImage("rental-" + 0,
+                    picture);
+            // TODO: Upload the image to the S3 bucket
+            // TODO: Save the entire rental with only the AWS S3 URL of the picture
+            // TODO: Return a string message indicating if the rental upload was successful.
 
-            // return ResponseEntity.status(HttpStatus.CREATED).body(imageUrl);
+            return ResponseEntity.status(HttpStatus.CREATED).body("TEST");
 
-        } catch (ApiException ex) {
+        } catch (
+
+        ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
         }
     }
