@@ -3,6 +3,7 @@ package com.openclassrooms.p3.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,10 @@ import com.openclassrooms.p3.payload.response.RentalSingleResponse;
 // import com.openclassrooms.p3.payload.response.RentalSingleResponse;
 // import com.openclassrooms.p3.payload.response.ResponseMessage;
 import com.openclassrooms.p3.service.RentalService;
+import com.openclassrooms.p3.service.S3Service;
 import com.openclassrooms.p3.service.UserService;
+
+import jakarta.validation.Valid;
 
 /**
  * Controller for handling rental-related operations.
@@ -40,6 +44,9 @@ public class RentalController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private S3Service s3Service;
 
     /**
      * Retrieves all rentals.
@@ -110,7 +117,7 @@ public class RentalController {
             Boolean rentalDoesNotExist = optionalRental.isEmpty();
             if (rentalDoesNotExist) {
                 GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
-                        HttpStatus.FORBIDDEN);
+                        HttpStatus.NOT_FOUND);
             }
 
             Rental rental = optionalRental.get();
@@ -131,39 +138,43 @@ public class RentalController {
      *         addition.
      */
     @PostMapping("")
-    public void addRental(@RequestParam RentalUpdateRequest request,
+    public ResponseEntity<?> addRental(@Valid @RequestParam RentalUpdateRequest request,
             @RequestHeader("Authorization") String authorizationHeader) {
-        try {
-            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Test POST response for the route api/rentals");
+        // try {
+        // String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
 
-            // Extract user ID from JWT
-            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+        // // Extract user ID from JWT
+        // Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
 
-            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-            if (hasJwtExtractionError) {
-                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
-            }
-            Long userIdFromToken = optionalUserIdFromToken.get();
-            // Fetch user information based on the user ID
-            Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
-            Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
-            if (userWithIdDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("User does not exist",
-                        HttpStatus.NOT_FOUND);
-            }
+        // Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+        // if (hasJwtExtractionError) {
+        // GlobalExceptionHandler.handleLogicError("An unexpected client error
+        // occurred", HttpStatus.UNAUTHORIZED);
+        // }
+        // Long userIdFromToken = optionalUserIdFromToken.get();
+        // // Fetch user information based on the user ID
+        // Optional<Users> optionalSpecificUser =
+        // userService.getUserById(userIdFromToken);
+        // Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+        // if (userWithIdDoesNotExist) {
+        // GlobalExceptionHandler.handleLogicError("User does not exist",
+        // HttpStatus.NOT_FOUND);
+        // }
 
-            Optional<Rental> optionalRental = rentalService.getRental(userIdFromToken);
-            Boolean rentalDoesNotExist = optionalRental.isEmpty();
-            if (rentalDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
-                        HttpStatus.FORBIDDEN);
-            }
+        // // TODO: Add logic to add a rental
+        // return ResponseEntity.status(HttpStatus.CREATED).body("TEST");
+        // // For now, let's assume you have the rental details in the 'request' object
 
-            // TODO: Add logic to add a rental
+        // // Upload image to S3
+        // String imageUrl = s3Service.uploadImage("rental-" + userIdFromToken,
+        // request.picture());
 
-        } catch (ApiException ex) {
-            return GlobalExceptionHandler.handleApiException(ex);
-        }
+        // return ResponseEntity.status(HttpStatus.CREATED).body(imageUrl);
+
+        // } catch (ApiException ex) {
+        // return GlobalExceptionHandler.handleApiException(ex);
+        // }
     }
 
     /**
@@ -175,38 +186,42 @@ public class RentalController {
      *         update.
      */
     @PutMapping("/{id}")
-    public void updateRental(@PathVariable final Long id,
+    public ResponseEntity<?> updateRental(@PathVariable final Long id,
             @RequestParam RentalUpdateRequest request, @RequestHeader("Authorization") String authorizationHeader) {
-        try {
-            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Test PUT response for the route api/rentals/{id}");
 
-            // Extract user ID from JWT
-            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+        // try {
+        // String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
 
-            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-            if (hasJwtExtractionError) {
-                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
-            }
-            Long userIdFromToken = optionalUserIdFromToken.get();
-            // Fetch user information based on the user ID
-            Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
-            Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
-            if (userWithIdDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("User does not exist",
-                        HttpStatus.NOT_FOUND);
-            }
+        // // Extract user ID from JWT
+        // Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
 
-            Optional<Rental> optionalRental = rentalService.getRental(userIdFromToken);
-            Boolean rentalDoesNotExist = optionalRental.isEmpty();
-            if (rentalDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
-                        HttpStatus.FORBIDDEN);
-            }
+        // Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+        // if (hasJwtExtractionError) {
+        // GlobalExceptionHandler.handleLogicError("An unexpected client error
+        // occurred", HttpStatus.UNAUTHORIZED);
+        // }
+        // Long userIdFromToken = optionalUserIdFromToken.get();
+        // // Fetch user information based on the user ID
+        // Optional<Users> optionalSpecificUser =
+        // userService.getUserById(userIdFromToken);
+        // Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+        // if (userWithIdDoesNotExist) {
+        // GlobalExceptionHandler.handleLogicError("User does not exist",
+        // HttpStatus.NOT_FOUND);
+        // }
 
-            // TODO: Add logic to update a rental
+        // Optional<Rental> optionalRental = rentalService.getRental(userIdFromToken);
+        // Boolean rentalDoesNotExist = optionalRental.isEmpty();
+        // if (rentalDoesNotExist) {
+        // GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
+        // HttpStatus.NOT_FOUND);
+        // }
 
-        } catch (ApiException ex) {
-            return GlobalExceptionHandler.handleApiException(ex);
-        }
+        // // TODO: Add logic to update a rental
+
+        // } catch (ApiException ex) {
+        // return GlobalExceptionHandler.handleApiException(ex);
+        // }
     }
 }

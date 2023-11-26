@@ -110,6 +110,12 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>3.0.0</version>
 		</dependency>
+		<!-- AWS SDK for Java - S3 -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.21.29</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -1,11 +1,15 @@
 package com.openclassrooms.p3.service;
 
-// import com.amazonaws.*;
-
-import java.io.ByteArrayInputStream;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class S3Service {
@@ -21,30 +25,42 @@ public class S3Service {
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
-    // private AmazonS3 s3Client;
+    private final S3Client s3Client;
 
-    public S3Service() {
-        // BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey,
-        // secretKey);
-        // this.s3Client = AmazonS3ClientBuilder.standard()
-        // .withCredentials(new AWSStaticCredentialsProvider(credentials))
-        // .withEndpointConfiguration(
-        // new AwsClientBuilder.EndpointConfiguration("s3." + region + ".amazonaws.com",
-        // region))
-        // .build();
+    public S3Service(@Value("${aws.s3.access-key}") String accessKey,
+            @Value("${aws.s3.secret-key}") String secretKey,
+            @Value("${aws.s3.region}") String region,
+            @Value("${aws.s3.bucket-name}") String bucketName) {
+        this.accessKey = accessKey;
+        this.secretKey = secretKey;
+        this.region = region;
+        this.bucketName = bucketName;
+
+        this.s3Client = S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
+                .build();
     }
 
-    public void uploadImage(String key, byte[] data) {
-        // try {
-        // ObjectMetadata metadata = new ObjectMetadata();
-        // metadata.setContentLength(data.length);
+    public String uploadImage(String key, MultipartFile file) {
+        try {
+            // Convert MultipartFile to byte[]
+            byte[] data = file.getBytes();
 
-        // s3Client.putObject(new PutObjectRequest(bucketName, key, new
-        // ByteArrayInputStream(data), metadata));
-        // } catch (AmazonServiceException e) {
-        // e.printStackTrace(); // Handle AmazonServiceException
-        // } catch (SdkClientException e) {
-        // e.printStackTrace(); // Handle SdkClientException
-        // }
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            RequestBody requestBody = RequestBody.fromBytes(data);
+
+            s3Client.putObject(putObjectRequest, requestBody);
+            return "https://s3." + region + ".amazonaws.com/" + bucketName + "/" + key;
+        } catch (S3Exception | java.io.IOException e) {
+            // Handle the exception (e.g., log it)
+            e.printStackTrace();
+            return null;
+        }
     }
+
 }

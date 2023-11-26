@@ -63,7 +63,7 @@ public class RentalService {
         rental.setSurface(rentalUpdateRequest.surface());
         rental.setPrice(rentalUpdateRequest.price());
         rental.setDescription(rentalUpdateRequest.description());
-        rental.setPicture(rentalUpdateRequest.picture());
+        // rental.setPicture(rentalUpdateRequest.picture());
 
         // Add additional logic or validation as needed
 
@@ -88,7 +88,7 @@ public class RentalService {
         existingRental.setSurface(rentalUpdateRequest.surface());
         existingRental.setPrice(rentalUpdateRequest.price());
         existingRental.setDescription(rentalUpdateRequest.description());
-        existingRental.setPicture(rentalUpdateRequest.picture());
+        // existingRental.setPicture(rentalUpdateRequest.picture());
 
         // Add additional logic or validation as needed
 
