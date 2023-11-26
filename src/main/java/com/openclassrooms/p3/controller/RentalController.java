@@ -1,5 +1,6 @@
 package com.openclassrooms.p3.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,7 +8,9 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.openclassrooms.p3.configuration.JwtUtil;
 import com.openclassrooms.p3.exception.ApiException;
@@ -138,10 +141,21 @@ public class RentalController {
      *         addition.
      */
     @PostMapping("")
-    public ResponseEntity<?> addRental(@Valid @RequestParam RentalUpdateRequest request,
+    public ResponseEntity<?> addRental(@RequestParam("name") String name,
+            @RequestParam("surface") Integer surface,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("description") String description,
+            @RequestParam(value = "picture", required = false) MultipartFile picture,
             @RequestHeader("Authorization") String authorizationHeader) {
-        return ResponseEntity.status(HttpStatus.CREATED).body("Test POST response for the route api/rentals");
+        return ResponseEntity.status(HttpStatus.CREATED).body(picture);
+
         // try {
+        // Boolean payloadIsInvalid = bindingResult.hasErrors();
+        // if (payloadIsInvalid) {
+        // GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult,
+        // HttpStatus.BAD_REQUEST);
+        // }
+
         // String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
 
         // // Extract user ID from JWT
@@ -162,8 +176,6 @@ public class RentalController {
         // HttpStatus.NOT_FOUND);
         // }
 
-        // // TODO: Add logic to add a rental
-        // return ResponseEntity.status(HttpStatus.CREATED).body("TEST");
         // // For now, let's assume you have the rental details in the 'request' object
 
         // // Upload image to S3
@@ -187,7 +199,11 @@ public class RentalController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateRental(@PathVariable final Long id,
-            @RequestParam RentalUpdateRequest request, @RequestHeader("Authorization") String authorizationHeader) {
+            @RequestParam("name") String name,
+            @RequestParam("surface") Integer surface,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("description") String description,
+            @RequestHeader("Authorization") String authorizationHeader) {
         return ResponseEntity.status(HttpStatus.CREATED).body("Test PUT response for the route api/rentals/{id}");
 
         // try {
