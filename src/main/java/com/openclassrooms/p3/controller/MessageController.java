@@ -98,7 +98,7 @@ public class MessageController {
     private void checkBodyPayloadErrors(BindingResult bindingResult) {
         Boolean payloadIsInvalid = bindingResult.hasErrors();
         if (payloadIsInvalid) {
-            GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
+            GlobalExceptionHandler.handlePayloadError("Bad request", bindingResult, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -116,7 +116,7 @@ public class MessageController {
 
         Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
         if (hasJwtExtractionError) {
-            GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
+            GlobalExceptionHandler.handleLogicError("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
 
         return optionalUserIdFromToken.get();
@@ -159,7 +159,7 @@ public class MessageController {
         Optional<Rental> optionalRental = rentalService.getRental(rentalId);
         Boolean rentalDoesNotExist = optionalRental.isEmpty();
         if (rentalDoesNotExist) {
-            GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
+            GlobalExceptionHandler.handleLogicError("Not found",
                     HttpStatus.NOT_FOUND);
         }
 

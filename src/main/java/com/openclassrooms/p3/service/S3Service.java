@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.openclassrooms.p3.exception.ApiException;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.UUID;
@@ -81,7 +83,7 @@ public class S3Service {
             // Return the URL of the uploaded file
             return url.toString();
         } catch (IOException e) {
-            throw new RuntimeException("Error uploading file to S3", e);
+            throw new ApiException("Error uploading file to S3" + e, null, null, null);
         }
     }
 }

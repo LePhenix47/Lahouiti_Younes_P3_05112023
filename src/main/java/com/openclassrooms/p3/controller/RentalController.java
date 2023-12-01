@@ -15,13 +15,18 @@ import com.openclassrooms.p3.mapper.RentalMapper;
 import com.openclassrooms.p3.mapper.UserMapper;
 import com.openclassrooms.p3.model.Rental;
 import com.openclassrooms.p3.model.Users;
+import com.openclassrooms.p3.payload.request.RentalUpdateRequest;
 import com.openclassrooms.p3.payload.response.RentalAllResponse;
 import com.openclassrooms.p3.payload.response.RentalSingleResponse;
+import com.openclassrooms.p3.payload.response.ResponseMessage;
 import com.openclassrooms.p3.payload.response.UserInfoResponse;
 import com.openclassrooms.p3.service.RentalService;
 import com.openclassrooms.p3.service.S3Service;
 import com.openclassrooms.p3.service.UserService;
 import com.openclassrooms.p3.utils.JwtUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.validation.Valid;
 
@@ -109,15 +114,20 @@ public class RentalController {
             @Valid @RequestParam(value = "picture", required = false) MultipartFile picture,
             @Valid @RequestHeader("Authorization") String authorizationHeader) {
         try {
+            // * Uncomment this code later on
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             verifyAndGetUserByTokenId(userIdFromToken);
+            var imageUrl = picture != null ? s3Service.uploadFile(picture, "images") : null;
 
-            String imageUrl = s3Service.uploadFile(picture, "images");
+            RentalUpdateRequest request = new RentalUpdateRequest(name, surface, price, description, imageUrl,
+                    userIdFromToken);
+            rentalService.saveRental(request);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body("Image URL: " + imageUrl);
+            ResponseMessage responseMessage = new ResponseMessage("Success!");
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
 
-        } catch (ApiException ex) {
-            return GlobalExceptionHandler.handleApiException(ex);
+        } catch (Exception ex) {
+            return GlobalExceptionHandler.handleApiException((ApiException) ex);
         }
     }
 
@@ -162,7 +172,7 @@ public class RentalController {
 
         Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
         if (hasJwtExtractionError) {
-            GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
+            GlobalExceptionHandler.handleLogicError("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
 
         return optionalUserIdFromToken.get();
@@ -205,7 +215,7 @@ public class RentalController {
         Optional<Rental> optionalRental = rentalService.getRental(rentalId);
         Boolean rentalDoesNotExist = optionalRental.isEmpty();
         if (rentalDoesNotExist) {
-            GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
+            GlobalExceptionHandler.handleLogicError("Not found",
                     HttpStatus.NOT_FOUND);
         }
 

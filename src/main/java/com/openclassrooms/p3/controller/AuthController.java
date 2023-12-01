@@ -117,7 +117,7 @@ public class AuthController {
     private void checkBodyPayloadErrors(BindingResult bindingResult) {
         Boolean payloadIsInvalid = bindingResult.hasErrors();
         if (payloadIsInvalid) {
-            GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
+            GlobalExceptionHandler.handlePayloadError("Bad request", bindingResult, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -175,7 +175,7 @@ public class AuthController {
     private void checkIfEmailIsInUse(String email) {
         Boolean hasAlreadyRegistered = userService.isEmailInUse(email);
         if (hasAlreadyRegistered) {
-            GlobalExceptionHandler.handleLogicError("Email is already in use", HttpStatus.CONFLICT);
+            GlobalExceptionHandler.handleLogicError("Conflict", HttpStatus.CONFLICT);
         }
     }
 
@@ -191,7 +191,7 @@ public class AuthController {
 
         Boolean userNotFound = optionalUser.isEmpty();
         if (userNotFound) {
-            GlobalExceptionHandler.handleLogicError("User not found", HttpStatus.NOT_FOUND);
+            GlobalExceptionHandler.handleLogicError("Not found", HttpStatus.NOT_FOUND);
         }
 
         return optionalUser.get();
@@ -206,7 +206,7 @@ public class AuthController {
     private void checkUserPassword(String requestPassword, Users user) {
         Boolean passwordIsIncorrect = !userService.isPasswordValid(requestPassword, user);
         if (passwordIsIncorrect) {
-            GlobalExceptionHandler.handleLogicError("Invalid password", HttpStatus.UNAUTHORIZED);
+            GlobalExceptionHandler.handleLogicError("Unauthorized", HttpStatus.UNAUTHORIZED);
         }
     }
 }

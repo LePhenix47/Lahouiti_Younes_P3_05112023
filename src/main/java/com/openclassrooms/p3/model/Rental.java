@@ -2,6 +2,7 @@ package com.openclassrooms.p3.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,6 +34,9 @@ public class Rental {
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;
 
+    @OneToMany(mappedBy = "rental", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Message> messages;
+
     /**
      * Name of the rental property.
      */
@@ -54,7 +58,7 @@ public class Rental {
     /**
      * File path or URL to a picture of the rental property.
      */
-    @Column(name = "picture", length = 255)
+    @Column(name = "picture", columnDefinition = "TEXT")
     private String picture;
 
     /**

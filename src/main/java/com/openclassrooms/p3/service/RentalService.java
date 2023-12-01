@@ -21,6 +21,9 @@ public class RentalService {
     @Autowired
     private RentalRepository rentalRepository;
 
+    @Autowired
+    private S3Service s3Service;
+
     /**
      * Retrieve a rental by its unique identifier.
      *
@@ -62,10 +65,10 @@ public class RentalService {
         rental.setName(rentalUpdateRequest.name());
         rental.setSurface(rentalUpdateRequest.surface());
         rental.setPrice(rentalUpdateRequest.price());
+        rental.setPicture(rentalUpdateRequest.picture());
         rental.setDescription(rentalUpdateRequest.description());
-        // rental.setPicture(rentalUpdateRequest.picture());
 
-        // Add additional logic or validation as needed
+        rental.setOwnerId(rentalUpdateRequest.owner_id());
 
         LocalDateTime currentTime = LocalDateTime.now();
         rental.setCreatedAt(currentTime);
