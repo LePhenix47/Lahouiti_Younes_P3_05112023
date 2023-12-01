@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
      * @throws ApiException Throws an ApiException with the provided error details.
      */
     public static void handlePayloadError(String errorMessage, BindingResult bindingResult,
-            HttpStatus httpStatus) {
+            HttpStatus httpStatus) throws ApiException {
         logger.error("Payload Error: {}", errorMessage);
 
         List<String> payloadErrors = new ArrayList<>();
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
      * @param httpStatus   The HTTP status code to be set in the response.
      * @throws ApiException Throws an ApiException with the provided error details.
      */
-    public static void handleLogicError(String errorMessage, HttpStatus httpStatus) {
+    public static void handleLogicError(String errorMessage, HttpStatus httpStatus) throws ApiException {
         logger.error("Logic Error: {}", errorMessage);
 
         List<String> errorMessageList = new ArrayList<>();

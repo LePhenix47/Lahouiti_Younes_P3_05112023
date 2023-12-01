@@ -1,14 +1,11 @@
 package com.openclassrooms.p3.controller;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,10 +13,8 @@ import com.openclassrooms.p3.configuration.JwtUtil;
 import com.openclassrooms.p3.exception.ApiException;
 import com.openclassrooms.p3.exception.GlobalExceptionHandler;
 import com.openclassrooms.p3.mapper.RentalMapper;
-import com.openclassrooms.p3.mapper.UserMapper;
 import com.openclassrooms.p3.model.Rental;
 import com.openclassrooms.p3.model.Users;
-import com.openclassrooms.p3.payload.request.RentalUpdateRequest;
 import com.openclassrooms.p3.payload.response.RentalAllResponse;
 import com.openclassrooms.p3.payload.response.RentalSingleResponse;
 // import com.openclassrooms.p3.payload.response.RentalAllResponse;
@@ -30,8 +25,6 @@ import com.openclassrooms.p3.service.S3Service;
 import com.openclassrooms.p3.service.UserService;
 
 import jakarta.validation.Valid;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 /**
  * Controller for handling rental-related operations.
@@ -42,6 +35,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 public class RentalController {
 
     @Autowired
+    private S3Service s3Service;
+
+    @Autowired
     private RentalMapper rentalMapper;
 
     @Autowired
@@ -49,9 +45,6 @@ public class RentalController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private S3Service s3Service;
 
     /**
      * Retrieves all rentals.
@@ -72,12 +65,7 @@ public class RentalController {
             }
             Long userIdFromToken = optionalUserIdFromToken.get();
             // Fetch user information based on the user ID
-            Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
-            Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
-            if (userWithIdDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("User does not exist",
-                        HttpStatus.NOT_FOUND);
-            }
+            checkTokenUserId(userIdFromToken);
 
             Iterable<Rental> allRentals = rentalService.getRentals();
             Iterable<RentalSingleResponse> rentalDtos = rentalMapper.toDtoRentals(allRentals);
@@ -173,17 +161,15 @@ public class RentalController {
             // }
 
             // Upload image to S3
-            s3Service.uploadImage("rental-" + 0,
-                    picture);
             // TODO: Upload the image to the S3 bucket
             // TODO: Save the entire rental with only the AWS S3 URL of the picture
             // TODO: Return a string message indicating if the rental upload was successful.
 
-            return ResponseEntity.status(HttpStatus.CREATED).body("TEST");
+            String imageUrl = s3Service.uploadFile(picture, "images");
 
-        } catch (
+            return ResponseEntity.status(HttpStatus.CREATED).body("Image URL: " + imageUrl);
 
-        ApiException ex) {
+        } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
         }
     }
@@ -235,7 +221,7 @@ public class RentalController {
         // }
     }
 
-    private void checkUserFromTokenUserId(Long userIdFromToken) {
+    private void checkTokenUserId(Long userIdFromToken) {
         // Fetch user information based on the user ID
         Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
         Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
