@@ -2,7 +2,6 @@ package com.openclassrooms.p3.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.openclassrooms.p3.configuration.JwtUtil;
 import com.openclassrooms.p3.exception.ApiException;
 import com.openclassrooms.p3.exception.GlobalExceptionHandler;
 import com.openclassrooms.p3.mapper.UserMapper;
@@ -12,6 +11,7 @@ import com.openclassrooms.p3.payload.request.AuthRegisterRequest;
 import com.openclassrooms.p3.payload.response.AuthResponse;
 import com.openclassrooms.p3.payload.response.UserInfoResponse;
 import com.openclassrooms.p3.service.UserService;
+import com.openclassrooms.p3.utils.JwtUtil;
 
 import jakarta.validation.Valid;
 
@@ -47,15 +47,9 @@ public class AuthController {
             BindingResult bindingResult) {
 
         try {
-            Boolean payloadIsInvalid = bindingResult.hasErrors();
-            if (payloadIsInvalid) {
-                GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
-            }
+            checkBodyPayloadErrors(bindingResult);
 
-            Boolean hasAlreadyRegistered = userService.isEmailInUse(request.email());
-            if (hasAlreadyRegistered) {
-                GlobalExceptionHandler.handleLogicError("Email is already in use", HttpStatus.CONFLICT);
-            }
+            checkIfEmailIsInUse(request.email());
 
             Users user = userService.saveUserBySignUp(request);
 
@@ -81,24 +75,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthLoginRequest request, BindingResult bindingResult) {
         try {
-            Boolean payloadIsInvalid = bindingResult.hasErrors();
-            if (payloadIsInvalid) {
-                GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
-            }
+            checkBodyPayloadErrors(bindingResult);
 
-            Optional<Users> optionalUser = userService.getUserByEmail(request.email());
-
-            Boolean userNotFound = optionalUser.isEmpty();
-            if (userNotFound) {
-                GlobalExceptionHandler.handleLogicError("User not found", HttpStatus.NOT_FOUND);
-            }
-
-            Users user = optionalUser.get();
-
-            Boolean passwordIsIncorrect = !userService.isPasswordValid(request.password(), user);
-            if (passwordIsIncorrect) {
-                GlobalExceptionHandler.handleLogicError("Invalid password", HttpStatus.UNAUTHORIZED);
-            }
+            Users user = getUserByEmail(request.email());
+            checkUserPassword(request.password(), user);
 
             UserInfoResponse userEntity = userMapper.toDtoUser(user);
 
@@ -119,40 +99,114 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<?> getMe(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // Extract JWT from Authorization header
-            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
-
-            // Extract user ID from JWT
-            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
-
-            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-            if (hasJwtExtractionError) {
-                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
-            }
-
-            Long userIdFromToken = optionalUserIdFromToken.get();
-            // Fetch user information based on the user ID
-            Optional<Users> optionalUser = userService.getUserById(userIdFromToken);
-
-            Boolean userDoesNotExist = optionalUser.isEmpty();
-            if (userDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("An unexpected server error occurred",
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            Users user = optionalUser.get();
-            // Convert user information to DTO
-            UserInfoResponse userEntity = userMapper.toDtoUser(user);
-
-            Boolean hasUserIdMismatch = userEntity.id() != userIdFromToken;
-            if (hasUserIdMismatch) {
-                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred",
-                        HttpStatus.FORBIDDEN);
-            }
+            Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
+            UserInfoResponse userEntity = verifyAndGetUserByJwt(userIdFromToken);
 
             return ResponseEntity.status(HttpStatus.OK).body(userEntity);
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
+        }
+    }
+
+    /**
+     * Checks if there are any payload errors in the request body.
+     *
+     * @param bindingResult The BindingResult object that holds the validation
+     *                      errors.
+     */
+    private void checkBodyPayloadErrors(BindingResult bindingResult) {
+        Boolean payloadIsInvalid = bindingResult.hasErrors();
+        if (payloadIsInvalid) {
+            GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Retrieves the user ID from the authorization header.
+     *
+     * @param authorizationHeader The authorization header containing the JWT token.
+     * @return The user ID extracted from the JWT token.
+     */
+    private Long getUserIdFromAuthorizationHeader(String authorizationHeader) {
+        String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+
+        // Extract user ID from JWT
+        Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+
+        Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+        if (hasJwtExtractionError) {
+            GlobalExceptionHandler.handleLogicError("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+
+        return optionalUserIdFromToken.get();
+    }
+
+    /**
+     * Retrieves the user information as a DTO entity based on the user ID extracted
+     * from the JWT
+     * token.
+     * 
+     * @param userIdFromToken The user ID extracted from the JWT token.
+     * @return The user information as a UserInfoResponse object.
+     * @throws ApiException If the user with the given ID does not exist or if there
+     *                      is a mismatch between the user ID and the token.
+     */
+    private UserInfoResponse verifyAndGetUserByJwt(Long userIdFromToken) {
+        // Fetch user information based on the user ID
+        Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
+        Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+        if (userWithIdDoesNotExist) {
+            GlobalExceptionHandler.handleLogicError("Not found",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        Users user = optionalSpecificUser.get();
+        // Convert user information to DTO
+        UserInfoResponse userEntity = userMapper.toDtoUser(user);
+
+        return userEntity;
+    }
+
+    /**
+     * Checks if an email is already registered in the system.
+     *
+     * @param email The email to check if it is already registered.
+     */
+    private void checkIfEmailIsInUse(String email) {
+        Boolean hasAlreadyRegistered = userService.isEmailInUse(email);
+        if (hasAlreadyRegistered) {
+            GlobalExceptionHandler.handleLogicError("Email is already in use", HttpStatus.CONFLICT);
+        }
+    }
+
+    /**
+     * Retrieves a user by their email.
+     *
+     * @param email The email of the user to retrieve.
+     * @return The user with the specified email.
+     * @throws ApiException If the user with the given email does not exist.
+     */
+    private Users getUserByEmail(String email) {
+        Optional<Users> optionalUser = userService.getUserByEmail(email);
+
+        Boolean userNotFound = optionalUser.isEmpty();
+        if (userNotFound) {
+            GlobalExceptionHandler.handleLogicError("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        return optionalUser.get();
+    }
+
+    /**
+     * Checks if the provided password is correct for the given user.
+     *
+     * @param requestPassword The password to check.
+     * @param user            The user to check the password against.
+     */
+    private void checkUserPassword(String requestPassword, Users user) {
+        Boolean passwordIsIncorrect = !userService.isPasswordValid(requestPassword, user);
+        if (passwordIsIncorrect) {
+            GlobalExceptionHandler.handleLogicError("Invalid password", HttpStatus.UNAUTHORIZED);
         }
     }
 }

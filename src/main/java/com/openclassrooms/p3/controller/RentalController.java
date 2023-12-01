@@ -9,20 +9,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.openclassrooms.p3.configuration.JwtUtil;
 import com.openclassrooms.p3.exception.ApiException;
 import com.openclassrooms.p3.exception.GlobalExceptionHandler;
 import com.openclassrooms.p3.mapper.RentalMapper;
+import com.openclassrooms.p3.mapper.UserMapper;
 import com.openclassrooms.p3.model.Rental;
 import com.openclassrooms.p3.model.Users;
 import com.openclassrooms.p3.payload.response.RentalAllResponse;
 import com.openclassrooms.p3.payload.response.RentalSingleResponse;
-// import com.openclassrooms.p3.payload.response.RentalAllResponse;
-// import com.openclassrooms.p3.payload.response.RentalSingleResponse;
-// import com.openclassrooms.p3.payload.response.ResponseMessage;
+import com.openclassrooms.p3.payload.response.UserInfoResponse;
 import com.openclassrooms.p3.service.RentalService;
 import com.openclassrooms.p3.service.S3Service;
 import com.openclassrooms.p3.service.UserService;
+import com.openclassrooms.p3.utils.JwtUtil;
 
 import jakarta.validation.Valid;
 
@@ -36,6 +35,9 @@ public class RentalController {
 
     @Autowired
     private S3Service s3Service;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Autowired
     private RentalMapper rentalMapper;
@@ -54,18 +56,10 @@ public class RentalController {
     @GetMapping("")
     public ResponseEntity<?> getRentals(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
 
-            // Extract user ID from JWT
-            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
-
-            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-            if (hasJwtExtractionError) {
-                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
-            }
-            Long userIdFromToken = optionalUserIdFromToken.get();
+            Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             // Fetch user information based on the user ID
-            checkTokenUserId(userIdFromToken);
+            verifyAndGetUserByJwt(userIdFromToken);
 
             Iterable<Rental> allRentals = rentalService.getRentals();
             Iterable<RentalSingleResponse> rentalDtos = rentalMapper.toDtoRentals(allRentals);
@@ -88,34 +82,11 @@ public class RentalController {
     public ResponseEntity<?> getRental(@PathVariable final Long id,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
-
-            // Extract user ID from JWT
-            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
-
-            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-            if (hasJwtExtractionError) {
-                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
-            }
-            Long userIdFromToken = optionalUserIdFromToken.get();
+            Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             // Fetch user information based on the user ID
-            Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
-            Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
-            if (userWithIdDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("User does not exist",
-                        HttpStatus.NOT_FOUND);
-            }
+            verifyAndGetUserByJwt(userIdFromToken);
 
-            Optional<Rental> optionalRental = rentalService.getRental(id);
-            Boolean rentalDoesNotExist = optionalRental.isEmpty();
-            if (rentalDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
-                        HttpStatus.NOT_FOUND);
-            }
-
-            Rental rental = optionalRental.get();
-
-            RentalSingleResponse rentalDto = rentalMapper.toDtoRental(rental);
+            RentalSingleResponse rentalDto = verifyAndGetRentalById(id);
 
             return ResponseEntity.status(HttpStatus.OK).body(rentalDto);
         } catch (ApiException ex) {
@@ -138,28 +109,8 @@ public class RentalController {
             @Valid @RequestParam(value = "picture", required = false) MultipartFile picture,
             @Valid @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // TODO: Validate the payload
-
-            // String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
-
-            // // Extract user ID from JWT
-            // Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
-
-            // Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-            // if (hasJwtExtractionError) {
-            // GlobalExceptionHandler.handleLogicError("An unexpected client error
-            // occurred", HttpStatus.UNAUTHORIZED);
-            // }
-            // Long userIdFromToken = optionalUserIdFromToken.get();
-            // // Fetch user information based on the user ID
-            // Optional<Users> optionalSpecificUser =
-            // userService.getUserById(userIdFromToken);
-            // Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
-            // if (userWithIdDoesNotExist) {
-            // GlobalExceptionHandler.handleLogicError("User does not exist",
-            // HttpStatus.NOT_FOUND);
-            // }
-
+            Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
+            verifyAndGetUserByJwt(userIdFromToken);
             // Upload image to S3
             // TODO: Upload the image to the S3 bucket
             // TODO: Save the entire rental with only the AWS S3 URL of the picture
@@ -189,45 +140,83 @@ public class RentalController {
             @RequestParam("price") BigDecimal price,
             @RequestParam("description") String description,
             @RequestHeader("Authorization") String authorizationHeader) {
-        return ResponseEntity.status(HttpStatus.OK).body("Test PUT response for the route api/rentals/{id}");
-        // try {
-        // String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
-        // // Extract user ID from JWT
-        // Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
-        // Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-        // if (hasJwtExtractionError) {
-        // GlobalExceptionHandler.handleLogicError("An unexpected client error
-        // occurred", HttpStatus.UNAUTHORIZED);
-        // }
-        // Long userIdFromToken = optionalUserIdFromToken.get();
-        // // Fetch user information based on the user ID
-        // Optional<Users> optionalSpecificUser =
-        // userService.getUserById(userIdFromToken);
-        // Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
-        // if (userWithIdDoesNotExist) {
-        // GlobalExceptionHandler.handleLogicError("User does not exist",
-        // HttpStatus.NOT_FOUND);
-        // }
-        // Optional<Rental> optionalRental = rentalService.getRental(userIdFromToken);
-        // Boolean rentalDoesNotExist = optionalRental.isEmpty();
-        // if (rentalDoesNotExist) {
-        // GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
-        // HttpStatus.NOT_FOUND);
-        // }
-        // // TODO: Verify the userId from the token to the one of the owner_id
-        // // TODO: Add logic to update a rental
-        // } catch (ApiException ex) {
-        // return GlobalExceptionHandler.handleApiException(ex);
-        // }
+        try {
+            Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
+            verifyAndGetUserByJwt(userIdFromToken);
+
+            RentalSingleResponse rentalDto = verifyAndGetRentalById(id);
+            // TODO: Verify the userId from the token to the one of the owner_id
+            // TODO: Add logic to update a rental
+            return ResponseEntity.status(HttpStatus.OK).body("Test PUT response for the route api/rentals/{id}");
+        } catch (ApiException ex) {
+            return GlobalExceptionHandler.handleApiException(ex);
+        }
     }
 
-    private void checkTokenUserId(Long userIdFromToken) {
+    /**
+     * Retrieves the user ID from the authorization header.
+     *
+     * @param authorizationHeader The authorization header containing the JWT token.
+     * @return The user ID extracted from the JWT token.
+     */
+    private Long getUserIdFromAuthorizationHeader(String authorizationHeader) {
+        String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+
+        // Extract user ID from JWT
+        Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+
+        Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+        if (hasJwtExtractionError) {
+            GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
+        }
+
+        return optionalUserIdFromToken.get();
+    }
+
+    /**
+     * Retrieves the user information as a DTO entity based on the user ID extracted
+     * from the JWT
+     * token.
+     * 
+     * @param userIdFromToken The user ID extracted from the JWT token.
+     * @return The user information as a UserInfoResponse object.
+     * @throws ApiException If the user with the given ID does not exist or if there
+     *                      is a mismatch between the user ID and the token.
+     */
+    private UserInfoResponse verifyAndGetUserByJwt(Long userIdFromToken) {
         // Fetch user information based on the user ID
         Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
         Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
         if (userWithIdDoesNotExist) {
-            GlobalExceptionHandler.handleLogicError("User does not exist",
+            GlobalExceptionHandler.handleLogicError("Not found",
                     HttpStatus.NOT_FOUND);
         }
+
+        Users user = optionalSpecificUser.get();
+        // Convert user information to DTO
+        UserInfoResponse userEntity = userMapper.toDtoUser(user);
+
+        return userEntity;
+    }
+
+    /**
+     * Retrieves a rental by its ID.
+     *
+     * @param rentalId The ID of the rental to retrieve.
+     * @return The rental with the given ID.
+     * @throws ApiException if the rental with the given ID does not exist.
+     */
+    private RentalSingleResponse verifyAndGetRentalById(Long rentalId) {
+        Optional<Rental> optionalRental = rentalService.getRental(rentalId);
+        Boolean rentalDoesNotExist = optionalRental.isEmpty();
+        if (rentalDoesNotExist) {
+            GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        Rental rental = optionalRental.get();
+
+        RentalSingleResponse rentalDto = rentalMapper.toDtoRental(rental);
+        return rentalDto;
     }
 }

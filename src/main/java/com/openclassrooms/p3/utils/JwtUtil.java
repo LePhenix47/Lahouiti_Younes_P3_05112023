@@ -1,4 +1,4 @@
-package com.openclassrooms.p3.configuration;
+package com.openclassrooms.p3.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

@@ -8,16 +8,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.openclassrooms.p3.configuration.JwtUtil;
 import com.openclassrooms.p3.exception.ApiException;
 import com.openclassrooms.p3.exception.GlobalExceptionHandler;
+import com.openclassrooms.p3.mapper.UserMapper;
 import com.openclassrooms.p3.model.Rental;
 import com.openclassrooms.p3.model.Users;
 import com.openclassrooms.p3.payload.request.MessageRequest;
 import com.openclassrooms.p3.payload.response.ResponseMessage;
+import com.openclassrooms.p3.payload.response.UserInfoResponse;
 import com.openclassrooms.p3.service.MessageService;
 import com.openclassrooms.p3.service.RentalService;
 import com.openclassrooms.p3.service.UserService;
+import com.openclassrooms.p3.utils.JwtUtil;
 
 import jakarta.validation.Valid;
 
@@ -31,6 +33,9 @@ public class MessageController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Autowired
     private RentalService rentalService;
@@ -50,48 +55,13 @@ public class MessageController {
     public ResponseEntity<?> postMessage(@Valid @RequestBody MessageRequest request, BindingResult bindingResult,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // ! Need to refactor this from these lines: 59-94
-            Boolean payloadIsInvalid = bindingResult.hasErrors();
-            if (payloadIsInvalid) {
-                GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
-            }
-            // Extract JWT from Authorization header
-            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+            checkBodyPayloadErrors(bindingResult);
 
-            // Extract user ID from JWT
-            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+            Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
 
-            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-            if (hasJwtExtractionError) {
-                GlobalExceptionHandler.handleLogicError(
-                        "Could not extract the userId from JWT",
-                        HttpStatus.UNAUTHORIZED);
-            }
+            verifyAndGetUserByJwt(userIdFromToken);
 
-            Long userIdFromToken = optionalUserIdFromToken.get();
-
-            Boolean hasUserIdMismatch = request.user_id() != userIdFromToken;
-            if (hasUserIdMismatch) {
-                GlobalExceptionHandler.handleLogicError("User ID mismatch",
-                        HttpStatus.FORBIDDEN);
-            }
-
-            // Fetch user information based on the user ID
-            Optional<Users> optionalUser = userService.getUserById(request.user_id());
-
-            Boolean userDoesNotExist = optionalUser.isEmpty();
-            if (userDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("User ID does not exist",
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            // !
-
-            Optional<Rental> optionalRental = rentalService.getRental(request.rental_id());
-            Boolean rentalDoesNotExist = optionalRental.isEmpty();
-            if (rentalDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
-                        HttpStatus.FORBIDDEN);
-            }
+            verifyAndGetRentalById(request.rental_id());
 
             messageService.saveMessage(request);
 
@@ -101,5 +71,82 @@ public class MessageController {
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
         }
+    }
+
+    /**
+     * Checks if there are any payload errors in the request body.
+     *
+     * @param bindingResult The BindingResult object that holds the validation
+     *                      errors.
+     */
+    private void checkBodyPayloadErrors(BindingResult bindingResult) {
+        Boolean payloadIsInvalid = bindingResult.hasErrors();
+        if (payloadIsInvalid) {
+            GlobalExceptionHandler.handlePayloadError("Bad payload", bindingResult, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Retrieves the user ID from the authorization header.
+     *
+     * @param authorizationHeader The authorization header containing the JWT token.
+     * @return The user ID extracted from the JWT token.
+     */
+    private Long getUserIdFromAuthorizationHeader(String authorizationHeader) {
+        String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+
+        // Extract user ID from JWT
+        Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
+
+        Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
+        if (hasJwtExtractionError) {
+            GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
+        }
+
+        return optionalUserIdFromToken.get();
+    }
+
+    /**
+     * Retrieves the user information as a DTO entity based on the user ID extracted
+     * from the JWT
+     * token.
+     * 
+     * @param userIdFromToken The user ID extracted from the JWT token.
+     * @return The user information as a UserInfoResponse object.
+     * @throws ApiException If the user with the given ID does not exist or if there
+     *                      is a mismatch between the user ID and the token.
+     */
+    private UserInfoResponse verifyAndGetUserByJwt(Long userIdFromToken) {
+        // Fetch user information based on the user ID
+        Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
+        Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
+        if (userWithIdDoesNotExist) {
+            GlobalExceptionHandler.handleLogicError("Not found",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        Users user = optionalSpecificUser.get();
+        // Convert user information to DTO
+        UserInfoResponse userEntity = userMapper.toDtoUser(user);
+
+        return userEntity;
+    }
+
+    /**
+     * Retrieves a rental by its ID.
+     *
+     * @param rentalId The ID of the rental to retrieve.
+     * @return The rental with the given ID.
+     * @throws ApiException if the rental with the given ID does not exist.
+     */
+    private Rental verifyAndGetRentalById(Long rentalId) {
+        Optional<Rental> optionalRental = rentalService.getRental(rentalId);
+        Boolean rentalDoesNotExist = optionalRental.isEmpty();
+        if (rentalDoesNotExist) {
+            GlobalExceptionHandler.handleLogicError("Rental ID does not exist",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return optionalRental.get();
     }
 }
