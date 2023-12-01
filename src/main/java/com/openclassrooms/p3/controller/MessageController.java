@@ -59,7 +59,9 @@ public class MessageController {
 
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
 
-            verifyAndGetUserByJwt(userIdFromToken);
+            verifyAndGetUserByTokenId(userIdFromToken);
+
+            checkUserIdMismatch(userIdFromToken, request.user_id());
 
             verifyAndGetRentalById(request.rental_id());
 
@@ -70,6 +72,20 @@ public class MessageController {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
+        }
+    }
+
+    /**
+     * Checks if there is a mismatch between the user ID extracted from the JWT
+     * token and the user ID provided in the request.
+     *
+     * @param userIdFromToken (Long) The user ID extracted from the JWT token.
+     * @param requestId       (Long) The user ID provided in the request.
+     */
+    private void checkUserIdMismatch(Long userIdFromToken, Long requestId) {
+        Boolean hasUserIdMismatch = userIdFromToken != requestId;
+        if (hasUserIdMismatch) {
+            GlobalExceptionHandler.handleLogicError("Forbidden", HttpStatus.FORBIDDEN);
         }
     }
 
@@ -116,7 +132,7 @@ public class MessageController {
      * @throws ApiException If the user with the given ID does not exist or if there
      *                      is a mismatch between the user ID and the token.
      */
-    private UserInfoResponse verifyAndGetUserByJwt(Long userIdFromToken) {
+    private UserInfoResponse verifyAndGetUserByTokenId(Long userIdFromToken) {
         // Fetch user information based on the user ID
         Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
         Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();

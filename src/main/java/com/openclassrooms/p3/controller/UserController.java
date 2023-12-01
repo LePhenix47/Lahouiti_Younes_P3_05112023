@@ -39,26 +39,9 @@ public class UserController {
     public ResponseEntity<?> getUser(@RequestParam final Long id,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // Extract JWT from Authorization header
-            String jwtToken = JwtUtil.extractJwtFromHeader(authorizationHeader);
+            Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
 
-            // Extract user ID from JWT
-            Optional<Long> optionalUserIdFromToken = JwtUtil.extractUserId(jwtToken);
-
-            Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
-            if (hasJwtExtractionError) {
-                GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
-            }
-
-            // Fetch user information based on the user ID
-            Optional<Users> optionalSpecificUser = userService.getUserById(id);
-            Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
-            if (userWithIdDoesNotExist) {
-                GlobalExceptionHandler.handleLogicError("User does not exist", HttpStatus.NOT_FOUND);
-            }
-
-            Users user = optionalSpecificUser.get();
-            UserInfoResponse userEntity = userMapper.toDtoUser(user);
+            UserInfoResponse userEntity = verifyAndGetUserByTokenId(userIdFromToken);
 
             return ResponseEntity.status(HttpStatus.OK).body(userEntity);
         } catch (ApiException ex) {
@@ -80,7 +63,7 @@ public class UserController {
 
         Boolean hasJwtExtractionError = optionalUserIdFromToken.isEmpty();
         if (hasJwtExtractionError) {
-            GlobalExceptionHandler.handleLogicError("An unexpected client error occurred", HttpStatus.UNAUTHORIZED);
+            GlobalExceptionHandler.handleLogicError("Not authorized", HttpStatus.UNAUTHORIZED);
         }
 
         return optionalUserIdFromToken.get();
@@ -96,7 +79,7 @@ public class UserController {
      * @throws ApiException If the user with the given ID does not exist or if there
      *                      is a mismatch between the user ID and the token.
      */
-    private UserInfoResponse verifyAndGetUserByJwt(Long userIdFromToken) {
+    private UserInfoResponse verifyAndGetUserByTokenId(Long userIdFromToken) {
         // Fetch user information based on the user ID
         Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
         Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();

@@ -59,7 +59,7 @@ public class RentalController {
 
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             // Fetch user information based on the user ID
-            verifyAndGetUserByJwt(userIdFromToken);
+            verifyAndGetUserByTokenId(userIdFromToken);
 
             Iterable<Rental> allRentals = rentalService.getRentals();
             Iterable<RentalSingleResponse> rentalDtos = rentalMapper.toDtoRentals(allRentals);
@@ -84,7 +84,7 @@ public class RentalController {
         try {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             // Fetch user information based on the user ID
-            verifyAndGetUserByJwt(userIdFromToken);
+            verifyAndGetUserByTokenId(userIdFromToken);
 
             RentalSingleResponse rentalDto = verifyAndGetRentalById(id);
 
@@ -110,11 +110,7 @@ public class RentalController {
             @Valid @RequestHeader("Authorization") String authorizationHeader) {
         try {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
-            verifyAndGetUserByJwt(userIdFromToken);
-            // Upload image to S3
-            // TODO: Upload the image to the S3 bucket
-            // TODO: Save the entire rental with only the AWS S3 URL of the picture
-            // TODO: Return a string message indicating if the rental upload was successful.
+            verifyAndGetUserByTokenId(userIdFromToken);
 
             String imageUrl = s3Service.uploadFile(picture, "images");
 
@@ -142,11 +138,10 @@ public class RentalController {
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
-            verifyAndGetUserByJwt(userIdFromToken);
+            verifyAndGetUserByTokenId(userIdFromToken);
 
             RentalSingleResponse rentalDto = verifyAndGetRentalById(id);
-            // TODO: Verify the userId from the token to the one of the owner_id
-            // TODO: Add logic to update a rental
+
             return ResponseEntity.status(HttpStatus.OK).body("Test PUT response for the route api/rentals/{id}");
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
@@ -183,7 +178,7 @@ public class RentalController {
      * @throws ApiException If the user with the given ID does not exist or if there
      *                      is a mismatch between the user ID and the token.
      */
-    private UserInfoResponse verifyAndGetUserByJwt(Long userIdFromToken) {
+    private UserInfoResponse verifyAndGetUserByTokenId(Long userIdFromToken) {
         // Fetch user information based on the user ID
         Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
         Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();

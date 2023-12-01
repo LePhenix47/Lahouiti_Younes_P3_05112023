@@ -100,7 +100,7 @@ public class AuthController {
     public ResponseEntity<?> getMe(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
-            UserInfoResponse userEntity = verifyAndGetUserByJwt(userIdFromToken);
+            UserInfoResponse userEntity = verifyAndGetUserByTokenId(userIdFromToken);
 
             return ResponseEntity.status(HttpStatus.OK).body(userEntity);
         } catch (ApiException ex) {
@@ -151,7 +151,7 @@ public class AuthController {
      * @throws ApiException If the user with the given ID does not exist or if there
      *                      is a mismatch between the user ID and the token.
      */
-    private UserInfoResponse verifyAndGetUserByJwt(Long userIdFromToken) {
+    private UserInfoResponse verifyAndGetUserByTokenId(Long userIdFromToken) {
         // Fetch user information based on the user ID
         Optional<Users> optionalSpecificUser = userService.getUserById(userIdFromToken);
         Boolean userWithIdDoesNotExist = optionalSpecificUser.isEmpty();
