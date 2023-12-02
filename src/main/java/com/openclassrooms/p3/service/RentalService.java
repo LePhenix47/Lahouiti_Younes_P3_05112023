@@ -81,22 +81,22 @@ public class RentalService {
      * Updates a rental object with new values provided in the RentalUpdateRequest
      * object.
      *
-     * @param oldRental           The existing rental object to be updated.
-     * @param rentalUpdateRequest The object containing the new values for the
-     *                            rental.
+     * @param oldRental The existing rental object to be updated.
+     * @param newRental The object containing the new values for the
+     *                  rental.
      * @return The updated rental object.
      */
-    public Rental updateRental(Rental oldRental, RentalUpdateRequest rentalUpdateRequest) {
+    public Rental updateRental(Rental oldRental, RentalUpdateRequest newRental) {
         Rental existingRental = new Rental();
 
         existingRental.setId(oldRental.getId());
-        existingRental.setName(rentalUpdateRequest.name());
-        existingRental.setSurface(rentalUpdateRequest.surface());
-        existingRental.setPrice(rentalUpdateRequest.price());
-        existingRental.setPicture(rentalUpdateRequest.picture());
-        existingRental.setDescription(rentalUpdateRequest.description());
+        existingRental.setName(newRental.name());
+        existingRental.setSurface(newRental.surface());
+        existingRental.setPrice(newRental.price());
+        existingRental.setPicture(newRental.picture());
+        existingRental.setDescription(newRental.description());
 
-        existingRental.setOwnerId(rentalUpdateRequest.owner_id());
+        existingRental.setOwnerId(newRental.owner_id());
 
         existingRental.setCreatedAt(oldRental.getCreatedAt());
 

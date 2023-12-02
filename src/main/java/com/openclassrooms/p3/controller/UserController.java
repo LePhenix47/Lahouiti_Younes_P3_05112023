@@ -36,12 +36,12 @@ public class UserController {
      * @return ResponseEntity<UserInfoResponse> with user information.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@RequestParam final Long id,
+    public ResponseEntity<?> getUser(@PathVariable final Long id,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
+            getUserIdFromAuthorizationHeader(authorizationHeader);
 
-            UserInfoResponse userEntity = verifyAndGetUserByTokenId(userIdFromToken);
+            UserInfoResponse userEntity = verifyAndGetUserByTokenId(id);
 
             return ResponseEntity.status(HttpStatus.OK).body(userEntity);
         } catch (ApiException ex) {

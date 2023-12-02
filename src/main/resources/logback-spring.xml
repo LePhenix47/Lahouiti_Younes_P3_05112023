@@ -5,7 +5,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- Customize the log format -->
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex{short}</pattern>
+            <pattern>Logback: %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%ex{short}</pattern>
         </encoder>
     </appender>
 

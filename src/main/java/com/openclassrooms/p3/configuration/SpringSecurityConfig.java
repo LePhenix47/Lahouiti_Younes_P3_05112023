@@ -15,7 +15,7 @@ public class SpringSecurityConfig {
     private static final String[] AUTHENTICATION_NEEDED_ROUTES = {
             "/api/messages/**",
             "/api/rentals/**",
-            "/api/users/**",
+            "/api/user/**",
             "/api/auth/**"
     };
     public static final String passwordEncoder = null;
