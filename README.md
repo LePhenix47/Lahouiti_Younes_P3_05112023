@@ -50,7 +50,7 @@ java -version
 
 You should see information about the installed Java version.
 
-2. MySQL Database
+1. MySQL Database
 
 Follow these steps to configure MySQL Workbench for your Java application:
 
@@ -107,9 +107,52 @@ CREATE TABLE `messages` (
 
 ## Installation Procedure
 
+**Cloning the project:**
+
 1. Clone this repository from GitHub: `git clone https://github.com/LePhenix47/Lahouiti_Younes_P3_05112023 .`
 
-2. Configure the database in `application.properties`.
+2. Configure the app in `application.properties`.
+
+**Set up the `application.properties` file:**
+
+Once you have cloned the repository, you'll need to add the `application.properties` file on the `src/main/resources/` folder containing these properties:
+
+```properties
+# MySQL DB
+spring.datasource.url=jdbc:mysql://localhost:3306/P3-Chatop
+spring.datasource.username=root
+spring.datasource.password=Az&rty1234
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.sql.init.platform=mysql
+spring.jpa.show-sql=true
+
+# Java Persistence API
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.format_sql=true
+
+# TomCat server
+server.port=3001
+server.error.include-message=always
+server.error.include-binding-errors=always
+server.error.include-stacktrace=on_param
+
+# Swagger 
+springdoc.api-docs.path=/api-docs
+
+
+# AWS S3
+aws.s3.region=eu-north-1
+aws.s3.accessKey=AKIA3PEH7I7P2ZU3DPKR
+aws.s3.secretKey=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
+aws.s3.bucket-name=oc-p3-chatop
+
+aws.s3.stack.auto=false
+aws.s3.credentials.profile-name=lahouiti
+
+# Logger
+logging.level.com.amazonaws.util.EC2MetadataUtils=error
+```
 
 3. Run the application using your IDE or by running `mvn spring-boot:run` in the project directory.
 
@@ -125,40 +168,40 @@ The project follows a classic layered architecture (Controller/Service/Java Pers
 
 ## Dependencies
 
-1. Spring Boot Starters:
+1. **Spring Boot Starters:**
+   - `spring-boot-starter-data-jpa`
+   - `spring-boot-starter-security`
+   - `spring-boot-starter-web`
+   - `spring-boot-starter-validation`
 
-- `spring-boot-starter-data-jpa`
-- `spring-boot-starter-security`
-- `spring-boot-starter-web`
-- `spring-boot-starter-validation`
+2. **Spring Session:**
+   - `spring-session-core`
 
-1. Spring Session:
+3. **Database Connector:**
+   - `mysql-connector-j (runtime scope)`
 
-- `spring-session-core`
+4. **Project Lombok:**
+   - `lombok (optional)`
 
-3. Database Connector:
+5. **Testing Dependencies:**
+   - `spring-boot-starter-test (test scope)`
+   - `spring-security-test (test scope)`
 
-- `mysql-connector-j (runtime scope)`
+6. **JSON Web Token (JWT) Dependencies:**
+   - `jjwt-api (version: 0.11.2)`
+   - `jjwt-impl (version: 0.11.2, runtime scope)`
+   - `jjwt-jackson (version: 0.11.2, runtime scope)`
 
-4. Project Lombok:
+7. **MapStruct for DTOs:**
+   - `mapstruct (version 1.5.5)`
+   - `mapstruct-processor (version 1.5.5)`
 
-- `lombok (optional)`
+8. **Swagger Dependencies:**
+   - `springdoc-openapi-starter-webmvc-ui (version: 2.2.0)`
+   - `springdoc-openapi-starter-common (version: 2.2.0)`
 
-5. Testing Dependencies:
-
-- `spring-boot-starter-test (test scope)`
-- `spring-security-test (test scope)`
-
-6. JSON Web Token (JWT) Dependencies:
-
-- `jjwt-api (version: 0.11.2)`
-- `jjwt-impl (version: 0.11.2, runtime scope)`
-- `jjwt-jackson (version: 0.11.2, runtime scope)`
-
-7. MapStruct for DTOs:
-
-- `mapstruct (version 1.5.5)`
-- `mapstruct-processor (version 1.5.5)`
+9. **AWS S3 SDK:**
+   - `software.amazon.awssdk:s3:2.21.33`
 
 ## Authentication and Security
 
@@ -205,4 +248,74 @@ Although you can view the routes and endpoints here:
 
 ## Miscellaneous
 
-- GitHub Repository: [Link to the Front-End Code](https://github.com/OpenClassrooms-Student-Center/Developpez-le-back-end-en-utilisant-Java-et-Spring)
+<details>
+  <summary>GitHub Repository</summary>
+  <a href="https://github.com/OpenClassrooms-Student-Center/Developpez-le-back-end-en-utilisant-Java-et-Spring" target="_blank">
+    Link to the Front-End Code
+  </a>
+</details>
+
+<details>
+  <summary>ASCII tree of the project</summary>
+  .
+├── main
+│   ├── java
+│   │   └── com
+│   │       └── openclassrooms
+│   │           └── p3
+│   │               ├── configuration
+│   │               │   └── SpringSecurityConfig.java
+│   │               ├── controller
+│   │               │   ├── AuthController.java
+│   │               │   ├── MessageController.java
+│   │               │   ├── RentalController.java
+│   │               │   └── UserController.java
+│   │               ├── exception
+│   │               │   ├── ApiErrorResponse.java
+│   │               │   ├── ApiException.java
+│   │               │   └── GlobalExceptionHandler.java
+│   │               ├── mapper
+│   │               │   ├── RentalMapper.java
+│   │               │   └── UserMapper.java
+│   │               ├── model
+│   │               │   ├── Message.java
+│   │               │   ├── Rental.java
+│   │               │   └── Users.java
+│   │               ├── payload
+│   │               │   ├── request
+│   │               │   │   ├── AuthLoginRequest.java
+│   │               │   │   ├── AuthRegisterRequest.java
+│   │               │   │   ├── MessageRequest.java
+│   │               │   │   └── RentalUpdateRequest.java
+│   │               │   └── response
+│   │               │       ├── AuthResponse.java
+│   │               │       ├── RentalAllResponse.java
+│   │               │       ├── RentalSingleResponse.java
+│   │               │       ├── ResponseMessage.java
+│   │               │       └── UserInfoResponse.java
+│   │               ├── repository
+│   │               │   ├── MessageRepository.java
+│   │               │   ├── RentalRepository.java
+│   │               │   └── UserRepository.java
+│   │               ├── service
+│   │               │   ├── MessageService.java
+│   │               │   ├── RentalService.java
+│   │               │   ├── S3Service.java
+│   │               │   └── UserService.java
+│   │               ├── utils
+│   │               │   └── JwtUtil.java
+│   │               └── P3Application.java
+│   └── resources
+│       ├── static
+│       │   └── images
+│       │       └── chatop-banner.png
+│       ├── templates
+│       ├── application.properties
+│       └── logback-spring.xml
+└── test
+    └── java
+        └── com
+            └── openclassrooms
+                └── p3
+                    └── P3ApplicationTests.java
+</details>
