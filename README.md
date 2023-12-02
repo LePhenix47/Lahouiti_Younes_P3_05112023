@@ -249,7 +249,7 @@ Although you can view the routes and endpoints here:
 ## Miscellaneous
 
 <details>
-  <summary>GitHub Repository</summary>
+  <summary>🔗 Link to Front-End GitHub Repository</summary>
   <a href="https://github.com/OpenClassrooms-Student-Center/Developpez-le-back-end-en-utilisant-Java-et-Spring" target="_blank">
     Link to the Front-End Code
   </a>
