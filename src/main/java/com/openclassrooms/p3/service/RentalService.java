@@ -78,25 +78,27 @@ public class RentalService {
     }
 
     /**
-     * Updates a rental.
+     * Updates a rental object with new values provided in the RentalUpdateRequest
+     * object.
      *
-     * @param rental The rental to be saved or updated.
-     * @return The saved or updated rental.
+     * @param oldRental           The existing rental object to be updated.
+     * @param rentalUpdateRequest The object containing the new values for the
+     *                            rental.
+     * @return The updated rental object.
      */
-    public Rental updateRental(Rental rentalUpdateRequest) {
+    public Rental updateRental(Rental oldRental, RentalUpdateRequest rentalUpdateRequest) {
         Rental existingRental = new Rental();
 
-        existingRental.setId(rentalUpdateRequest.getId());
-        existingRental.setName(rentalUpdateRequest.getName());
-        existingRental.setSurface(rentalUpdateRequest.getSurface());
-        existingRental.setPrice(rentalUpdateRequest.getPrice());
-        existingRental.setPicture(rentalUpdateRequest.getPicture());
-        existingRental.setDescription(rentalUpdateRequest.getDescription());
+        existingRental.setId(oldRental.getId());
+        existingRental.setName(rentalUpdateRequest.name());
+        existingRental.setSurface(rentalUpdateRequest.surface());
+        existingRental.setPrice(rentalUpdateRequest.price());
+        existingRental.setPicture(rentalUpdateRequest.picture());
+        existingRental.setDescription(rentalUpdateRequest.description());
 
-        existingRental.setOwnerId(rentalUpdateRequest.getOwnerId());
+        existingRental.setOwnerId(rentalUpdateRequest.owner_id());
 
-        // Add additional logic or validation as needed
-        existingRental.setCreatedAt(rentalUpdateRequest.getCreatedAt());
+        existingRental.setCreatedAt(oldRental.getCreatedAt());
 
         LocalDateTime currentTime = LocalDateTime.now();
         existingRental.setUpdatedAt(currentTime);

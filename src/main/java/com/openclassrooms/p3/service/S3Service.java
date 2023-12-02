@@ -15,6 +15,8 @@ import com.openclassrooms.p3.exception.ApiException;
 import java.io.IOException;
 import java.net.URL;
 
+import java.util.UUID;
+
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
 /**
@@ -53,7 +55,8 @@ public class S3Service {
             String fileName = file.getOriginalFilename();
 
             // Determine the full key (path + filename)
-            String fullKey = (path.isEmpty() ? "" : path + "/") + fileName;
+            UUID uuid = UUID.randomUUID();
+            String fullKey = (path.isEmpty() ? "" : path + "/") + uuid + fileName;
 
             // Upload the file to the S3 bucket
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()

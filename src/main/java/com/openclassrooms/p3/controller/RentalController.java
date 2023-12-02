@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -88,7 +89,7 @@ public class RentalController {
             // Fetch user information based on the user ID
             verifyAndGetUserByTokenId(userIdFromToken);
 
-            Rental rental = verifyAndGetRentalById(id, null);
+            Rental rental = verifyAndGetRentalById(id);
             RentalSingleResponse rentalDto = rentalMapper.toDtoRental(rental);
 
             return ResponseEntity.status(HttpStatus.OK).body(rentalDto);
@@ -114,16 +115,19 @@ public class RentalController {
         try {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             verifyAndGetUserByTokenId(userIdFromToken);
-            var imageUrl = picture != null ? s3Service.uploadFile(picture, "images") : null;
+
+            var imageUrl = picture == null ? null : s3Service.uploadFile(picture, "images");
 
             RentalUpdateRequest request = new RentalUpdateRequest(name, surface, price, description, imageUrl,
                     userIdFromToken);
+
             rentalService.saveRental(request);
 
             ResponseMessage responseMessage = new ResponseMessage("Success!");
             return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
 
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
             return GlobalExceptionHandler.handleApiException((ApiException) ex);
         }
     }
@@ -147,11 +151,19 @@ public class RentalController {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             verifyAndGetUserByTokenId(userIdFromToken);
 
-            Rental rental = verifyAndGetRentalById(id, Optional.of(userIdFromToken));
+            Rental oldRental = verifyAndGetRentalById(id);
+            checkUserIdMismatch(userIdFromToken, oldRental.getOwnerId());
 
-            rentalService.updateRental(rental);
+            // return ResponseEntity.status(HttpStatus.OK).body(oldRental);
 
-            return ResponseEntity.status(HttpStatus.OK).body("Test PUT response for the route api/rentals/{id}");
+            var imageUrl = oldRental.getPicture() == null ? null : oldRental.getPicture();
+
+            RentalUpdateRequest updatedRental = new RentalUpdateRequest(name, surface, price, description, imageUrl,
+                    userIdFromToken);
+            rentalService.updateRental(oldRental, updatedRental);
+
+            return ResponseEntity.status(HttpStatus.OK).body(updatedRental);
+
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
         }
@@ -210,28 +222,30 @@ public class RentalController {
      * @return The rental with the given ID.
      * @throws ApiException if the rental with the given ID does not exist.
      */
-    private Rental verifyAndGetRentalById(Long rentalId, Optional<Long> optionalUserId) {
+    private Rental verifyAndGetRentalById(Long rentalId) {
         Optional<Rental> optionalRental = rentalService.getRental(rentalId);
         Boolean rentalDoesNotExist = optionalRental.isEmpty();
         if (rentalDoesNotExist) {
             GlobalExceptionHandler.handleLogicError("Not found",
                     HttpStatus.NOT_FOUND);
         }
-        Rental rental = optionalRental.get();
+        return optionalRental.get();
+    }
 
-        Boolean noNeedToCheckForMismatch = optionalUserId.isEmpty();
-        if (noNeedToCheckForMismatch) {
-            return rental;
-        }
-
-        Long userId = optionalUserId.get();
-        Boolean hasUserIdMismatch = rental.getOwnerId() != userId;
-
+    /**
+     * Checks if the user ID extracted from the authorization token and the user ID
+     * extracted from the request are different.
+     * If they are different, throws a logic error with the message "Forbidden" and
+     * the HTTP status code 403 (FORBIDDEN).
+     *
+     * @param userIdFromToken   The user ID extracted from the authorization token.
+     * @param userIdFromRequest The user ID extracted from the request.
+     */
+    private void checkUserIdMismatch(Long userIdFromToken, Long userIdFromRequest) {
+        Boolean hasUserIdMismatch = userIdFromToken != userIdFromRequest;
         if (hasUserIdMismatch) {
             GlobalExceptionHandler.handleLogicError("Forbidden",
                     HttpStatus.FORBIDDEN);
         }
-        return rental;
-
     }
 }

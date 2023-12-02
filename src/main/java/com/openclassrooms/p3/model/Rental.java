@@ -34,8 +34,9 @@ public class Rental {
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;
 
-    @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Message> messages;
+    // @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, orphanRemoval =
+    // true)
+    // private List<Message> messages;
 
     /**
      * Name of the rental property.
