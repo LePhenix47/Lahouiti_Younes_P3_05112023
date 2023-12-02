@@ -25,9 +25,6 @@ import com.openclassrooms.p3.service.S3Service;
 import com.openclassrooms.p3.service.UserService;
 import com.openclassrooms.p3.utils.JwtUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.validation.Valid;
 
 /**
@@ -91,7 +88,8 @@ public class RentalController {
             // Fetch user information based on the user ID
             verifyAndGetUserByTokenId(userIdFromToken);
 
-            RentalSingleResponse rentalDto = verifyAndGetRentalById(id);
+            Rental rental = verifyAndGetRentalById(id, null);
+            RentalSingleResponse rentalDto = rentalMapper.toDtoRental(rental);
 
             return ResponseEntity.status(HttpStatus.OK).body(rentalDto);
         } catch (ApiException ex) {
@@ -114,7 +112,6 @@ public class RentalController {
             @Valid @RequestParam(value = "picture", required = false) MultipartFile picture,
             @Valid @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // * Uncomment this code later on
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             verifyAndGetUserByTokenId(userIdFromToken);
             var imageUrl = picture != null ? s3Service.uploadFile(picture, "images") : null;
@@ -150,7 +147,9 @@ public class RentalController {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             verifyAndGetUserByTokenId(userIdFromToken);
 
-            RentalSingleResponse rentalDto = verifyAndGetRentalById(id);
+            Rental rental = verifyAndGetRentalById(id, Optional.of(userIdFromToken));
+
+            rentalService.updateRental(rental);
 
             return ResponseEntity.status(HttpStatus.OK).body("Test PUT response for the route api/rentals/{id}");
         } catch (ApiException ex) {
@@ -211,17 +210,28 @@ public class RentalController {
      * @return The rental with the given ID.
      * @throws ApiException if the rental with the given ID does not exist.
      */
-    private RentalSingleResponse verifyAndGetRentalById(Long rentalId) {
+    private Rental verifyAndGetRentalById(Long rentalId, Optional<Long> optionalUserId) {
         Optional<Rental> optionalRental = rentalService.getRental(rentalId);
         Boolean rentalDoesNotExist = optionalRental.isEmpty();
         if (rentalDoesNotExist) {
             GlobalExceptionHandler.handleLogicError("Not found",
                     HttpStatus.NOT_FOUND);
         }
-
         Rental rental = optionalRental.get();
 
-        RentalSingleResponse rentalDto = rentalMapper.toDtoRental(rental);
-        return rentalDto;
+        Boolean noNeedToCheckForMismatch = optionalUserId.isEmpty();
+        if (noNeedToCheckForMismatch) {
+            return rental;
+        }
+
+        Long userId = optionalUserId.get();
+        Boolean hasUserIdMismatch = rental.getOwnerId() != userId;
+
+        if (hasUserIdMismatch) {
+            GlobalExceptionHandler.handleLogicError("Forbidden",
+                    HttpStatus.FORBIDDEN);
+        }
+        return rental;
+
     }
 }

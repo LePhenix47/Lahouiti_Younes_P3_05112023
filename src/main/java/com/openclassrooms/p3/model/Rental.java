@@ -34,7 +34,7 @@ public class Rental {
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;
 
-    @OneToMany(mappedBy = "rental", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
 
     /**

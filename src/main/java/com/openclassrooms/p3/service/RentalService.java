@@ -83,17 +83,20 @@ public class RentalService {
      * @param rental The rental to be saved or updated.
      * @return The saved or updated rental.
      */
-    public Rental updateRental(RentalUpdateRequest rentalUpdateRequest) {
+    public Rental updateRental(Rental rentalUpdateRequest) {
         Rental existingRental = new Rental();
 
-        // Update the existing rental with data from rentalUpdateRequest
-        existingRental.setName(rentalUpdateRequest.name());
-        existingRental.setSurface(rentalUpdateRequest.surface());
-        existingRental.setPrice(rentalUpdateRequest.price());
-        existingRental.setDescription(rentalUpdateRequest.description());
-        // existingRental.setPicture(rentalUpdateRequest.picture());
+        existingRental.setId(rentalUpdateRequest.getId());
+        existingRental.setName(rentalUpdateRequest.getName());
+        existingRental.setSurface(rentalUpdateRequest.getSurface());
+        existingRental.setPrice(rentalUpdateRequest.getPrice());
+        existingRental.setPicture(rentalUpdateRequest.getPicture());
+        existingRental.setDescription(rentalUpdateRequest.getDescription());
+
+        existingRental.setOwnerId(rentalUpdateRequest.getOwnerId());
 
         // Add additional logic or validation as needed
+        existingRental.setCreatedAt(rentalUpdateRequest.getCreatedAt());
 
         LocalDateTime currentTime = LocalDateTime.now();
         existingRental.setUpdatedAt(currentTime);
