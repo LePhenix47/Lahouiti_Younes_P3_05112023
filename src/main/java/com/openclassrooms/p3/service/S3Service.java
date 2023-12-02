@@ -3,8 +3,6 @@ package com.openclassrooms.p3.service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
-import software.amazon.awssdk.services.s3.model.PutObjectAclRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.core.sync.RequestBody;
 
@@ -16,7 +14,6 @@ import com.openclassrooms.p3.exception.ApiException;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.UUID;
 
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 
@@ -53,15 +50,12 @@ public class S3Service {
                             StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyId, secretKey)))
                     .build();
 
-            String originalFileName = file.getOriginalFilename();
-
-            // Generate a unique filename using UUID
-            String uniqueFileName = UUID.randomUUID().toString() + "_" + originalFileName;
+            String fileName = file.getOriginalFilename();
 
             // Determine the full key (path + filename)
-            String fullKey = (path.isEmpty() ? "" : "/" + path + "/") + uniqueFileName;
+            String fullKey = (path.isEmpty() ? "" : path + "/") + fileName;
 
-            // Upload the file to the S3 bucket with PUBLIC_READ ACL
+            // Upload the file to the S3 bucket
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(fullKey)
@@ -69,13 +63,6 @@ public class S3Service {
                     .build();
 
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-
-            // Set public read permissions for the uploaded object
-            s3Client.putObjectAcl(PutObjectAclRequest.builder()
-                    .bucket(bucketName)
-                    .key(fullKey)
-                    .acl(ObjectCannedACL.PUBLIC_READ)
-                    .build());
 
             // Generate a pre-signed URL for the uploaded file
             URL url = s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(fullKey));
