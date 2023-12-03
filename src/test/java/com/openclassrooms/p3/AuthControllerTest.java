@@ -3,13 +3,11 @@ package com.openclassrooms.p3;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.p3.payload.request.AuthLoginRequest;
 import com.openclassrooms.p3.payload.request.AuthRegisterRequest;
@@ -17,14 +15,16 @@ import com.openclassrooms.p3.utils.JwtUtil;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class is a test class for the AuthController class. It contains several
+ * test methods that simulate HTTP requests to the controller endpoints and
+ * verify the expected responses.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AuthControllerTest {
@@ -37,6 +37,12 @@ public class AuthControllerTest {
      * /register
      */
 
+    /**
+     * HAPPY PATH:
+     * Test method for registering a new user with valid input.
+     * 
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testRegisterNewUserWithValidInput() throws Exception {
         // Create a valid registration request
@@ -56,6 +62,12 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.token").isNotEmpty());
     }
 
+    /**
+     * EDGE CASE:
+     * Test method for registering an already registered user with valid input.
+     * 
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testAlreadyRegisteredUserWithValidInput() throws Exception {
         // Same user as before
@@ -74,6 +86,12 @@ public class AuthControllerTest {
                 .andExpect(status().isConflict());
     }
 
+    /**
+     * EDGE CASE:
+     * Test method for registering a new user with invalid input.
+     * 
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testRegisterNewUserWithInvalidInput() throws Exception {
         AuthRegisterRequest invalidRequest = new AuthRegisterRequest(
@@ -94,6 +112,12 @@ public class AuthControllerTest {
      * /login
      */
 
+    /**
+     * HAPPY PATH:
+     * Test method for logging in an existing user with valid input.
+     * 
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testLoginExistingUserWithValidInput() throws Exception {
         // Create a valid login request
@@ -112,6 +136,12 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.token").isNotEmpty());
     }
 
+    /**
+     * EDGE CASE:
+     * Test method for logging in an existing user with invalid input.
+     * 
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testLoginExistingUserWithInvalidInput() throws Exception {
         // Create an invalid login request
@@ -133,6 +163,12 @@ public class AuthControllerTest {
      * /me
      */
 
+    /**
+     * HAPPY PATH:
+     * Test method for retrieving authenticated user info with valid input.
+     * 
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testRetrieveAuthenticatedUserInfoWithValidInput() throws Exception {
         // Mock a JWT token with the desired claims
@@ -150,6 +186,12 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.name", Matchers.notNullValue()));
     }
 
+    /**
+     * EDGE CASE:
+     * Test method for retrieving authenticated user info with invalid input.
+     * 
+     * @throws Exception if an error occurs during the test
+     */
     @Test
     public void testRetrieveAuthenticatedUserInfoWithInvalidInput() throws Exception {
         String invalidJwt = "jwt";
