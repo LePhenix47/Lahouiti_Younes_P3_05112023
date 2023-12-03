@@ -104,6 +104,17 @@ public class RentalController {
      * @return ResponseEntity<ResponseMessage> with information about the rental
      *         addition.
      */
+    /**
+     * Adds a new rental to the system.
+     *
+     * @param name                The name of the rental.
+     * @param surface             The surface area of the rental.
+     * @param price               The price of the rental.
+     * @param description         The description of the rental.
+     * @param picture             An optional picture of the rental.
+     * @param authorizationHeader The authorization header containing the JWT token.
+     * @return A response entity with the success status and a response message.
+     */
     @PostMapping("")
     public ResponseEntity<?> addRental(@RequestParam("name") String name,
             @Valid @RequestParam("surface") Integer surface,
@@ -115,16 +126,14 @@ public class RentalController {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             verifyAndGetUserByTokenId(userIdFromToken);
 
-            var imageUrl = picture == null ? null : s3Service.uploadFile(picture, "images");
+            String imageUrl = picture == null ? null : s3Service.uploadFile(picture, "images");
 
             RentalUpdateRequest request = new RentalUpdateRequest(name, surface, price, description, imageUrl,
                     userIdFromToken);
-
             rentalService.saveRental(request);
 
             ResponseMessage responseMessage = new ResponseMessage("Success!");
             return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
-
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             return GlobalExceptionHandler.handleApiException((ApiException) ex);
@@ -134,8 +143,14 @@ public class RentalController {
     /**
      * Updates information about a specific rental.
      *
-     * @param id      The ID of the rental to update.
-     * @param request The rental request containing details for the update.
+     * @param id                  The ID of the rental to update in the URL
+     * @param name                The new name of the rental in the Form Data
+     * @param surface             The new surface area of the rental in the Form
+     *                            Data
+     * @param price               The new price of the rental in the Form Data
+     * @param description         The new description of the rental in the Form Data
+     * @param authorizationHeader The authorization header containing the user's
+     *                            token
      * @return ResponseEntity<ResponseMessage> with information about the rental
      *         update.
      */
@@ -153,15 +168,14 @@ public class RentalController {
             Rental oldRental = verifyAndGetRentalById(id);
             checkUserIdMismatch(userIdFromToken, oldRental.getOwnerId());
 
-            // return ResponseEntity.status(HttpStatus.OK).body(oldRental);
-
-            var imageUrl = oldRental.getPicture() == null ? null : oldRental.getPicture();
+            String imageUrl = oldRental.getPicture();
 
             RentalUpdateRequest updatedRental = new RentalUpdateRequest(name, surface, price, description, imageUrl,
                     userIdFromToken);
             rentalService.updateRental(oldRental, updatedRental);
 
-            return ResponseEntity.status(HttpStatus.OK).body(updatedRental);
+            ResponseMessage responseMessage = new ResponseMessage("Success!");
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
 
         } catch (ApiException ex) {
             return GlobalExceptionHandler.handleApiException(ex);
