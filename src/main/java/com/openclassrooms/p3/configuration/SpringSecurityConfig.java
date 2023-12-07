@@ -16,18 +16,19 @@ public class SpringSecurityConfig {
             "/api/messages/**",
             "/api/rentals/**",
             "/api/user/**",
-            "/api/auth/**"
+            "/api/auth/**",
+            "/swagger-ui/index.html",
     };
     public static final String passwordEncoder = null;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests((authorize) -> authorize.requestMatchers(
-                        AUTHENTICATION_NEEDED_ROUTES).permitAll().anyRequest().authenticated());
+        // http.csrf(csrf -> csrf.disable())
+        // .sessionManagement(session -> session
+        // .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        // .authorizeHttpRequests((authorize) -> authorize.requestMatchers(
+        // AUTHENTICATION_NEEDED_ROUTES).permitAll().anyRequest().authenticated());
 
         return http.build();
     }
