@@ -9,6 +9,10 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Optional;
 
+/**
+ * The JwtUtil class provides utility methods for generating, validating, and
+ * extracting information from JSON Web Tokens (JWTs).
+ */
 public class JwtUtil {
 
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
