@@ -24,6 +24,8 @@ public class SpringSecurityConfig {
             "/api/auth/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
+            "/v3/api-docs/swagger-config",
+            "/v3/api-docs"
     };
     public static final String passwordEncoder = null;
 
