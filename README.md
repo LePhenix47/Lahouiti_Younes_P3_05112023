@@ -136,12 +136,15 @@ server.port=3001
 server.error.include-message=always
 server.error.include-binding-errors=always
 server.error.include-stacktrace=on_param
+server.error.whitelabel.enabled=false
 
 # Swagger 
-springdoc.api-docs.path=/api-docs
+spring.mvc.pathmatch.matching-strategy=ant-path-matcher
+springdoc.swagger-ui.enabled=true
 
 
 # AWS S3
+# View the aws-credentials.txt file to access the AWS S3 credentials
 aws.s3.region=eu-north-1
 aws.s3.accessKey=AKIA3PEH7I7P2ZU3DPKR
 aws.s3.secretKey=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
@@ -152,6 +155,11 @@ aws.s3.credentials.profile-name=lahouiti
 
 # Logger
 logging.level.com.amazonaws.util.EC2MetadataUtils=error
+logging.level.root=INFO
+logging.level.org.springframework=INFO
+logging.level.com.yourpackage=DEBUG
+logging.level.com.openclassrooms=INFO
+logging.level.org.springframework.boot.web.embedded.tomcat=INFO
 ```
 
 3. Run the application using your IDE or by running `mvn spring-boot:run` in the project directory.
@@ -213,7 +221,7 @@ When creating a rental listing, an image is required. This image is sent to the 
 
 ## API Documentation
 
-The API is documented using Swagger. You can access the API documentation by navigating to the Swagger URL.
+The API is documented using Swagger. You can access the API documentation by navigating to the Swagger URL after running the server `http://localhost:3001/swagger-ui/index.html`.
 
 Although you can view the routes and endpoints here:
 
