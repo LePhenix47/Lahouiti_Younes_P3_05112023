@@ -61,10 +61,9 @@ Connect to your MySQL Server instance.
 Create a new database for your application and add all the tables to your database:
 
 ```sql
--- Create the tables
+-- Create the database
 DROP DATABASE IF EXISTS `p3-chatop`;
 
--- Create the database
 CREATE DATABASE `p3-chatop`;
 
 -- Switch to the new database
@@ -84,9 +83,9 @@ CREATE TABLE `rentals` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `owner_id` BIGINT NOT NULL,
     `name` VARCHAR(255) NOT NULL,
-    `surface` INT DEFAULT NULL,
-    `price` DECIMAL(10, 2) DEFAULT NULL,
-    `picture` VARCHAR(255) DEFAULT NULL,
+    `surface` INT NOT NULL,
+    `price` DECIMAL(10, 2) NOT NULL,
+    `picture` TEXT DEFAULT NULL,
     `description` TEXT,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -124,9 +123,9 @@ spring.datasource.username=root
 spring.datasource.password=Az&rty1234
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.sql.init.platform=mysql
-spring.jpa.show-sql=true
 
 # Java Persistence API
+spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.properties.hibernate.format_sql=true
@@ -144,7 +143,6 @@ springdoc.swagger-ui.enabled=true
 
 
 # AWS S3
-# View the aws-credentials.txt file to access the AWS S3 credentials
 aws.s3.region=eu-north-1
 aws.s3.accessKey=AKIA3PEH7I7P2ZU3DPKR
 aws.s3.secretKey=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
@@ -213,11 +211,11 @@ The project follows a classic layered architecture (Controller/Service/Java Pers
 
 ## Authentication and Security
 
-Authentication is managed by Spring Security with JWT. All routes require authentication, except those related to account creation or login. Passwords are securely stored in the database. Database credentials are not exposed in the code.
+Authentication is managed by Spring Security with JWT. All routes require authentication, except those related to account creation or login. Passwords are encoded and securely stored in the database. Database credentials are not exposed in the code.
 
 ## Image Management
 
-When creating a rental listing, an image is required. This image is sent to the API, stored on the server, and the image URL is saved in the database.
+When creating a rental listing, an image is required. This image is sent to the API, stored on the AWS S3 bucket, and the image URL is saved in the database.
 
 ## API Documentation
 
@@ -260,5 +258,12 @@ Although you can view the routes and endpoints here:
   <summary>🔗 Link to Front-End GitHub Repository</summary>
   <a href="https://github.com/OpenClassrooms-Student-Center/Developpez-le-back-end-en-utilisant-Java-et-Spring" target="_blank">
     Link to the Front-End Code
+  </a>
+</details>
+
+<details>
+  <summary>📊 Check the tables relationships visually</summary>
+  <a href="/P3 table relationships.drawio" target="_blank">
+    Draw.io file for the table relationships
   </a>
 </details>
