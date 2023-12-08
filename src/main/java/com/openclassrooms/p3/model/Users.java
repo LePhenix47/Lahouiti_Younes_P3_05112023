@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 /**
  * Entity representing a user in the system.
@@ -44,11 +46,13 @@ public class Users {
      * Timestamp indicating when the user account was created.
      */
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     /**
      * Timestamp indicating the last update time of the user account.
      */
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", nullable = false)
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }

@@ -3,6 +3,9 @@ package com.openclassrooms.p3.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -71,11 +74,13 @@ public class Rental {
      * Timestamp indicating when the rental property was created.
      */
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     /**
      * Timestamp indicating the last update time of the rental property.
      */
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", nullable = false)
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }

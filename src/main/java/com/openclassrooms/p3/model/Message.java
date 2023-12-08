@@ -5,6 +5,9 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 /**
  * Entity representing a message.
  */
@@ -56,11 +59,13 @@ public class Message {
      * Timestamp indicating when the message was created.
      */
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", nullable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     /**
      * Timestamp indicating the last update time of the message.
      */
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", nullable = false)
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
