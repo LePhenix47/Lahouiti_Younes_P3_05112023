@@ -25,6 +25,14 @@ import com.openclassrooms.p3.service.S3Service;
 import com.openclassrooms.p3.service.UserService;
 import com.openclassrooms.p3.utils.JwtUtil;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 /**
@@ -33,6 +41,7 @@ import jakarta.validation.Valid;
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/api/rentals")
+@Tag(name = "Rentals")
 public class RentalController {
 
     @Autowired
@@ -56,6 +65,12 @@ public class RentalController {
      * @return ResponseEntity<RentalAllResponse> with an array of rentals.
      */
     @GetMapping("")
+    @Operation(description = "Retrieves all rentals", summary = "Retrieves all rentals", responses = {
+            @ApiResponse(description = "Successfully retrieved all rentals", responseCode = "200", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = RentalSingleResponse.class)), examples = @ExampleObject(value = "rentals:[{\"id\":1,\"name\":\"Example Rental\",\"surface\":100,\"price\":1000.00,\"picture\":\"example.jpg\",\"description\":\"Example description\",\"owner_id\":1,\"created_at\":\"2023-01-01T12:00:00\",\"updated_at\":\"2023-01-01T13:00:00\"}]"))
+            }),
+            @ApiResponse(description = "Unauthorized", responseCode = "401"),
+    })
     public ResponseEntity<?> getRentals(@RequestHeader("Authorization") String authorizationHeader) {
         try {
 
@@ -81,6 +96,13 @@ public class RentalController {
      * @return ResponseEntity<RentalSingleResponse> with rental information.
      */
     @GetMapping("/{id}")
+    @Operation(description = "Retrieves a rental by its ID", summary = "Retrieves a rental by its ID", responses = {
+            @ApiResponse(description = "Successfully retrieved all rentals", responseCode = "200", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = RentalSingleResponse.class)), examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Example Rental\",\"surface\":100,\"price\":1000.00,\"picture\":\"example.jpg\",\"description\":\"Example description\",\"owner_id\":1,\"created_at\":\"2023-01-01T12:00:00\",\"updated_at\":\"2023-01-01T13:00:00\"}"))
+            }),
+            @ApiResponse(description = "Unauthorized", responseCode = "401"),
+            @ApiResponse(description = "User not found", responseCode = "404"),
+    })
     public ResponseEntity<?> getRental(@PathVariable final Long id,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
@@ -116,6 +138,14 @@ public class RentalController {
      * @return A response entity with the success status and a response message.
      */
     @PostMapping("")
+    @Operation(description = "Adds a new rental", summary = "Adds a new rental", responses = {
+            @ApiResponse(description = "Successfully added a new rental", responseCode = "201", content =
+
+            {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class), examples = @ExampleObject(value = "{\"message\":\"Success!\"}")) }),
+            @ApiResponse(description = "Unauthorized", responseCode = "401"),
+            @ApiResponse(description = "Bad form data values", responseCode = "403"),
+    })
     public ResponseEntity<?> addRental(@RequestParam("name") String name,
             @Valid @RequestParam("surface") Integer surface,
             @Valid @RequestParam("price") BigDecimal price,
@@ -155,6 +185,13 @@ public class RentalController {
      *         update.
      */
     @PutMapping("/{id}")
+    @Operation(description = "Updates information about a specific rental", summary = "Updates a rental by its ID", responses = {
+            @ApiResponse(description = "Successfully updated the rental by its ID", responseCode = "201", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class), examples = @ExampleObject(value = "{\"message\":\"Success!\"}")) }),
+            @ApiResponse(description = "Unauthorized", responseCode = "401"),
+            @ApiResponse(description = "Rental not found", responseCode = "404"),
+            @ApiResponse(description = "Forbidden", responseCode = "403"),
+    })
     public ResponseEntity<?> updateRental(@PathVariable final Long id,
             @RequestParam("name") String name,
             @RequestParam("surface") Integer surface,

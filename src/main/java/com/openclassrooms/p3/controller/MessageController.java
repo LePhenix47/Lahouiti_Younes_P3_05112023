@@ -21,6 +21,13 @@ import com.openclassrooms.p3.service.RentalService;
 import com.openclassrooms.p3.service.UserService;
 import com.openclassrooms.p3.utils.JwtUtil;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 /**
@@ -29,6 +36,7 @@ import jakarta.validation.Valid;
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/api/messages")
+@Tag(name = "Messages")
 public class MessageController {
 
     @Autowired
@@ -52,6 +60,14 @@ public class MessageController {
      *         the message post.
      */
     @PostMapping("")
+    @Operation(description = "Sends a message to the owner's rental", summary = "Sends a message to the owner's rental", responses = {
+            @ApiResponse(description = "Successfully sent the message", responseCode = "201", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class), examples = @ExampleObject(value = "{\"message\":\"Successfully created a new message!\"}")) }),
+            @ApiResponse(description = "Bad payload", responseCode = "400"),
+            @ApiResponse(description = "Unauthorized", responseCode = "401"),
+            @ApiResponse(description = "Forbidden", responseCode = "403"),
+            @ApiResponse(description = "Not found", responseCode = "404"),
+    })
     public ResponseEntity<?> postMessage(@Valid @RequestBody MessageRequest request, BindingResult bindingResult,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {

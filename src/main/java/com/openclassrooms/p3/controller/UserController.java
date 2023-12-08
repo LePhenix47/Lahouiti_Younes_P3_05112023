@@ -15,12 +15,21 @@ import com.openclassrooms.p3.payload.response.UserInfoResponse;
 import com.openclassrooms.p3.service.UserService;
 import com.openclassrooms.p3.utils.JwtUtil;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 /**
  * Controller for handling user-related operations.
  */
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/api/user")
+@Tag(name = "Users")
 public class UserController {
 
     @Autowired
@@ -36,6 +45,12 @@ public class UserController {
      * @return ResponseEntity<UserInfoResponse> with user information.
      */
     @GetMapping("/{id}")
+    @Operation(description = "Retrieves a user by their ID", summary = "Retrieves a user by their ID", responses = {
+            @ApiResponse(description = "Successfully retrieved the user by their ID", responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserInfoResponse.class), examples = @ExampleObject(value = "{\"id\":1,\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"created_at\":\"2023-12-07T12:00:00.000Z\",\"updated_at\":\"2023-12-07T12:30:00.000Z\"}")) }),
+            @ApiResponse(description = "Unauthorized", responseCode = "401"),
+            @ApiResponse(description = "User not found", responseCode = "404"),
+    })
     public ResponseEntity<?> getUser(@PathVariable final Long id,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {

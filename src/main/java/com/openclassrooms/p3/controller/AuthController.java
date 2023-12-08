@@ -13,12 +13,19 @@ import com.openclassrooms.p3.payload.response.UserInfoResponse;
 import com.openclassrooms.p3.service.UserService;
 import com.openclassrooms.p3.utils.JwtUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 
@@ -28,6 +35,7 @@ import org.springframework.validation.BindingResult;
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication")
 public class AuthController {
 
     @Autowired
@@ -43,6 +51,13 @@ public class AuthController {
      * @return ResponseEntity<AuthResponse> A JWT if registration is successful.
      */
     @PostMapping("/register")
+    @Operation(description = "Registers a new user", summary = "Registers a new user", responses = {
+            @ApiResponse(description = "Successfully registered", responseCode = "201", content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthResponse.class), examples = @ExampleObject(value = "{\"token\": \"[GENERATED_JWT]\"}"))
+            }),
+            @ApiResponse(description = "Bad payload", responseCode = "400"),
+            @ApiResponse(description = "User already registered", responseCode = "409"),
+    })
     public ResponseEntity<?> register(@Valid @RequestBody AuthRegisterRequest request,
             BindingResult bindingResult) {
 
@@ -73,6 +88,13 @@ public class AuthController {
      * @return ResponseEntity<AuthResponse> A JWT if login is successful.
      */
     @PostMapping("/login")
+    @Operation(description = "Logs in an existing user", summary = "Logs in an existing user", responses = {
+            @ApiResponse(description = "Successfully retrieved user info", responseCode = "200", content = {
+                    @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthResponse.class), examples = @ExampleObject(value = "{\"token\": \"[GENERATED_JWT]\"}"))
+            }),
+            @ApiResponse(description = "Bad payload", responseCode = "400"),
+            @ApiResponse(description = "User with inputted email not found", responseCode = "404"),
+    })
     public ResponseEntity<?> login(@Valid @RequestBody AuthLoginRequest request, BindingResult bindingResult) {
         try {
             checkBodyPayloadErrors(bindingResult);
@@ -97,6 +119,13 @@ public class AuthController {
      * @return ResponseEntity<AuthResponse> containing the user info.
      */
     @GetMapping("/me")
+    @Operation(description = "Retrieves information about the currently authenticated user", summary = "Retrieves information about the currently authenticated user", responses = {
+            @ApiResponse(description = "Successfully retrieved user info", responseCode = "200", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserInfoResponse.class), examples = @ExampleObject(value = "{\"id\":1,\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"created_at\":\"2023-12-07T12:00:00.000Z\",\"updated_at\":\"2023-12-07T12:30:00.000Z\"}")) }),
+            @ApiResponse(description = "Bad payload", responseCode = "400"),
+            @ApiResponse(description = "Unauthorized", responseCode = "401"),
+            @ApiResponse(description = "User not found", responseCode = "404"),
+    })
     public ResponseEntity<?> getMe(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
