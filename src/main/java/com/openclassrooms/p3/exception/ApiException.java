@@ -2,7 +2,6 @@ package com.openclassrooms.p3.exception;
 
 import org.springframework.http.HttpStatus;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 

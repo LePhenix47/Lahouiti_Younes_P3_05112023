@@ -158,6 +158,8 @@ public class RentalController {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             verifyAndGetUserByTokenId(userIdFromToken);
 
+            checkIfFileIsImage(picture);
+
             String imageUrl = s3Service.uploadFile(picture, "images");
 
             RentalUpdateRequest request = new RentalUpdateRequest(name, surface, price, description, imageUrl,
@@ -298,6 +300,21 @@ public class RentalController {
         if (hasUserIdMismatch) {
             GlobalExceptionHandler.handleLogicError("Forbidden",
                     HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Checks if a given file has an image content type.
+     *
+     * @param file The file to be checked for image content type.
+     */
+    private void checkIfFileIsImage(MultipartFile file) {
+        // Check if the file has an image content type
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image")) {
+            // Additional checks can be performed here if needed
+            GlobalExceptionHandler.handleLogicError("Bad payload",
+                    HttpStatus.BAD_REQUEST);
         }
     }
 }
