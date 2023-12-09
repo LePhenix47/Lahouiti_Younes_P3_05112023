@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,11 +32,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import jakarta.validation.Valid;
 
 /**
  * Controller for handling rental-related operations.
@@ -124,13 +120,6 @@ public class RentalController {
     }
 
     /**
-     * Adds a new rental.
-     *
-     * @param request The rental request containing details.
-     * @return ResponseEntity<ResponseMessage> with information about the rental
-     *         addition.
-     */
-    /**
      * Adds a new rental to the system.
      *
      * @param name                The name of the rental.
@@ -139,21 +128,23 @@ public class RentalController {
      * @param description         The description of the rental.
      * @param picture             An optional picture of the rental.
      * @param authorizationHeader The authorization header containing the JWT token.
-     * @return A response entity with the success status and a response message.
+     * @return The ResponseEntity<ResponseMessage> entity with the success status
+     *         and a response message.
      */
-    @PostMapping(path = "", consumes = "multipart/form-data")
+    @PostMapping(path = "", consumes = { "multipart/form-data" })
     @Operation(description = "Adds a new rental", summary = "Adds a new rental", responses = {
             @ApiResponse(description = "Successfully added a new rental", responseCode = "201", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class), examples = @ExampleObject(value = "{\"message\":\"Success!\"}")) }),
             @ApiResponse(description = "Unauthorized", responseCode = "401"),
             @ApiResponse(description = "Bad form data values", responseCode = "403"),
     }, security = { @SecurityRequirement(name = "bearerAuth") })
-    public ResponseEntity<?> addRental(@RequestParam("name") String name,
-            @Parameter @Valid @RequestParam("surface") Integer surface,
-            @Parameter @Valid @RequestParam("price") BigDecimal price,
-            @Parameter @Valid @RequestParam("description") String description,
-            @Parameter(description = "Files to be uploaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE)) @Valid @RequestParam("picture") MultipartFile picture,
-            @Parameter @Valid @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> addRental(
+            @RequestParam("name") String name,
+            @RequestParam("surface") Integer surface,
+            @RequestParam("price") BigDecimal price,
+            @RequestParam("description") String description,
+            @RequestPart("picture") MultipartFile picture,
+            @RequestHeader("Authorization") String authorizationHeader) {
         try {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             verifyAndGetUserByTokenId(userIdFromToken);
@@ -196,7 +187,8 @@ public class RentalController {
             @ApiResponse(description = "Rental not found", responseCode = "404"),
             @ApiResponse(description = "Forbidden", responseCode = "403"),
     }, security = { @SecurityRequirement(name = "bearerAuth") })
-    public ResponseEntity<?> updateRental(@PathVariable final Long id,
+    public ResponseEntity<?> updateRental(
+            @PathVariable final Long id,
             @RequestParam("name") String name,
             @RequestParam("surface") Integer surface,
             @RequestParam("price") BigDecimal price,
