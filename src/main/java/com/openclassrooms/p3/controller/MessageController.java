@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -67,7 +68,7 @@ public class MessageController {
             @ApiResponse(description = "Unauthorized", responseCode = "401"),
             @ApiResponse(description = "Forbidden", responseCode = "403"),
             @ApiResponse(description = "Not found", responseCode = "404"),
-    })
+    }, security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<?> postMessage(@Valid @RequestBody MessageRequest request, BindingResult bindingResult,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {

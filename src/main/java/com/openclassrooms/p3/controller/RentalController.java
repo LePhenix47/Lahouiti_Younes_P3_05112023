@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,10 +30,13 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 
 /**
@@ -70,7 +74,7 @@ public class RentalController {
                     @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = RentalSingleResponse.class)), examples = @ExampleObject(value = "rentals:[{\"id\":1,\"name\":\"Example Rental\",\"surface\":100,\"price\":1000.00,\"picture\":\"example.jpg\",\"description\":\"Example description\",\"owner_id\":1,\"created_at\":\"2023-01-01T12:00:00\",\"updated_at\":\"2023-01-01T13:00:00\"}]"))
             }),
             @ApiResponse(description = "Unauthorized", responseCode = "401"),
-    })
+    }, security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<?> getRentals(@RequestHeader("Authorization") String authorizationHeader) {
         try {
 
@@ -102,7 +106,7 @@ public class RentalController {
             }),
             @ApiResponse(description = "Unauthorized", responseCode = "401"),
             @ApiResponse(description = "User not found", responseCode = "404"),
-    })
+    }, security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<?> getRental(@PathVariable final Long id,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
@@ -137,26 +141,24 @@ public class RentalController {
      * @param authorizationHeader The authorization header containing the JWT token.
      * @return A response entity with the success status and a response message.
      */
-    @PostMapping("")
+    @PostMapping(path = "", consumes = "multipart/form-data")
     @Operation(description = "Adds a new rental", summary = "Adds a new rental", responses = {
-            @ApiResponse(description = "Successfully added a new rental", responseCode = "201", content =
-
-            {
+            @ApiResponse(description = "Successfully added a new rental", responseCode = "201", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class), examples = @ExampleObject(value = "{\"message\":\"Success!\"}")) }),
             @ApiResponse(description = "Unauthorized", responseCode = "401"),
             @ApiResponse(description = "Bad form data values", responseCode = "403"),
-    })
+    }, security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<?> addRental(@RequestParam("name") String name,
-            @Valid @RequestParam("surface") Integer surface,
-            @Valid @RequestParam("price") BigDecimal price,
-            @Valid @RequestParam("description") String description,
-            @Valid @RequestParam(value = "picture", required = false) MultipartFile picture,
-            @Valid @RequestHeader("Authorization") String authorizationHeader) {
+            @Parameter @Valid @RequestParam("surface") Integer surface,
+            @Parameter @Valid @RequestParam("price") BigDecimal price,
+            @Parameter @Valid @RequestParam("description") String description,
+            @Parameter(description = "Files to be uploaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE)) @Valid @RequestParam("picture") MultipartFile picture,
+            @Parameter @Valid @RequestHeader("Authorization") String authorizationHeader) {
         try {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);
             verifyAndGetUserByTokenId(userIdFromToken);
 
-            String imageUrl = picture == null ? null : s3Service.uploadFile(picture, "images");
+            String imageUrl = s3Service.uploadFile(picture, "images");
 
             RentalUpdateRequest request = new RentalUpdateRequest(name, surface, price, description, imageUrl,
                     userIdFromToken);
@@ -191,7 +193,7 @@ public class RentalController {
             @ApiResponse(description = "Unauthorized", responseCode = "401"),
             @ApiResponse(description = "Rental not found", responseCode = "404"),
             @ApiResponse(description = "Forbidden", responseCode = "403"),
-    })
+    }, security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<?> updateRental(@PathVariable final Long id,
             @RequestParam("name") String name,
             @RequestParam("surface") Integer surface,

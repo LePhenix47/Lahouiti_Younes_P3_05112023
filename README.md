@@ -85,7 +85,7 @@ CREATE TABLE `rentals` (
     `name` VARCHAR(255) NOT NULL,
     `surface` INT NOT NULL,
     `price` DECIMAL(10, 2) NOT NULL,
-    `picture` TEXT DEFAULT NULL,
+    `picture` TEXT NOT NULL,
     `description` TEXT,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

@@ -18,9 +18,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,7 +126,7 @@ public class AuthController {
             @ApiResponse(description = "Bad payload", responseCode = "400"),
             @ApiResponse(description = "Unauthorized", responseCode = "401"),
             @ApiResponse(description = "User not found", responseCode = "404"),
-    })
+    }, security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<?> getMe(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             Long userIdFromToken = getUserIdFromAuthorizationHeader(authorizationHeader);

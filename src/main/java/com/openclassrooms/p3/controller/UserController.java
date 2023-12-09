@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
@@ -50,7 +51,7 @@ public class UserController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = UserInfoResponse.class), examples = @ExampleObject(value = "{\"id\":1,\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"created_at\":\"2023-12-07T12:00:00.000Z\",\"updated_at\":\"2023-12-07T12:30:00.000Z\"}")) }),
             @ApiResponse(description = "Unauthorized", responseCode = "401"),
             @ApiResponse(description = "User not found", responseCode = "404"),
-    })
+    }, security = { @SecurityRequirement(name = "bearerAuth") })
     public ResponseEntity<?> getUser(@PathVariable final Long id,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
