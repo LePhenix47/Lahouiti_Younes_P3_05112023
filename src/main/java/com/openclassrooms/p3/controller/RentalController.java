@@ -311,7 +311,9 @@ public class RentalController {
     private void checkIfFileIsImage(MultipartFile file) {
         // Check if the file has an image content type
         String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image")) {
+
+        Boolean isNotAnImage = contentType == null || !contentType.startsWith("image");
+        if (isNotAnImage) {
             // Additional checks can be performed here if needed
             GlobalExceptionHandler.handleLogicError("Bad payload",
                     HttpStatus.BAD_REQUEST);
